@@ -14,6 +14,6 @@ template <class T>
 constexpr unsigned get_mantissa_size();
 template <> constexpr unsigned get_mantissa_size<float >() {return 23;}
 template <> constexpr unsigned get_mantissa_size<double>() {return 52;}
-}
+} // namespace detail
 } // namespace aonfp
 #endif
