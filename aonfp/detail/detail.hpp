@@ -34,55 +34,54 @@ template <class T>
 constexpr T get_inf_mantissa(T v) {return static_cast<T>(0);};
 
 template <class T>
-inline void copy_mantissa(T& mantissa, const double v);
-template <> inline void copy_mantissa<uint64_t>(uint64_t& mantissa, const double v) {
-	mantissa = (*reinterpret_cast<const uint64_t*>(&v)) << 12;
+inline T copy_mantissa(const double v);
+template <> inline uint64_t copy_mantissa<uint64_t>(const double v) {
+	return (*reinterpret_cast<const uint64_t*>(&v)) << 12;
 }
-template <> inline void copy_mantissa<uint32_t>(uint32_t& mantissa, const double v) {
+template <> inline uint32_t copy_mantissa<uint32_t>(const double v) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
 	const auto r_s = (mantissa_bs & 0x80000lu) << 1;
 	const auto mantissa_bs_a = mantissa_bs + r_s;
 	const auto digit_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
-	mantissa = mantissa_bs_a >> (20 + digit_up);
+	return mantissa_bs_a >> (20 + digit_up);
 }
-template <> inline void copy_mantissa<uint16_t>(uint16_t& mantissa, const double v) {
+template <> inline uint16_t copy_mantissa<uint16_t>(const double v) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
 	const auto r_s = (mantissa_bs & 0x800000000lu) << 1;
 	const auto mantissa_bs_a = mantissa_bs + r_s;
 	const auto digit_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
-	mantissa = mantissa_bs_a >> (36 + digit_up);
+	return mantissa_bs_a >> (36 + digit_up);
 }
-template <> inline void copy_mantissa<uint8_t>(uint8_t& mantissa, const double v) {
+template <> inline uint8_t copy_mantissa<uint8_t>(const double v) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
 	const auto r_s = (mantissa_bs & 0x80000000000lu) << 1;
 	const auto mantissa_bs_a = mantissa_bs + r_s;
 	const auto digit_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
-	mantissa = mantissa_bs_a >> (44 + digit_up);
+	return mantissa_bs_a >> (44 + digit_up);
 }
 
 template <class T>
-inline void copy_mantissa(T& mantissa, const float v);
-template <> inline void copy_mantissa<uint64_t>(uint64_t& mantissa, const float v) {
-	mantissa = (*reinterpret_cast<const uint64_t*>(&v)) << (9 + 32);
+inline T copy_mantissa(const float v);
+template <> inline uint64_t copy_mantissa<uint64_t>(const float v) {
+	return (*reinterpret_cast<const uint64_t*>(&v)) << (9 + 32);
 }
-template <> inline void copy_mantissa<uint32_t>(uint32_t& mantissa, const float v) {
-	mantissa = (*reinterpret_cast<const uint32_t*>(&v)) << 9;
+template <> inline uint32_t copy_mantissa<uint32_t>(const float v) {
+	return (*reinterpret_cast<const uint32_t*>(&v)) << 9;
 }
-template <> inline void copy_mantissa<uint16_t>(uint16_t& mantissa, const float v) {
+template <> inline uint16_t copy_mantissa<uint16_t>(const float v) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint32_t*>(&v)) & 0x7fffff;
 	const auto r_s = (mantissa_bs & 0x40) << 1;
 	const auto mantissa_bs_a = mantissa_bs + r_s;
 	const auto digit_up = (mantissa_bs_a & 0x800000) >> 23;
-	mantissa = mantissa_bs_a >> (7 + digit_up);
+	return mantissa_bs_a >> (7 + digit_up);
 }
-template <> inline void copy_mantissa<uint8_t>(uint8_t& mantissa, const float v) {
+template <> inline uint8_t copy_mantissa<uint8_t>(const float v) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint32_t*>(&v)) & 0x7fffff;
 	const auto r_s = (mantissa_bs & 0x8000) << 1;
 	const auto mantissa_bs_a = mantissa_bs + r_s;
 	const auto digit_up = (mantissa_bs_a & 0x800000) >> 23;
-	mantissa = mantissa_bs_a >> (15 + digit_up);
+	return mantissa_bs_a >> (15 + digit_up);
 }
-
 } //namespace detail
 } //namespace aonfp
 #endif
