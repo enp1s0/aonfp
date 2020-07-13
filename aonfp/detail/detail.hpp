@@ -5,6 +5,12 @@ namespace aonfp {
 
 namespace detail {
 
+enum uo_flow_t {
+	uo_flow_non,
+	uo_flow_overflow,
+	uo_flow_underflow,
+};
+
 constexpr unsigned get_default_exponent_bias(const unsigned exponent_size) {
 	return (1 << (exponent_size - 1)) - 1;
 }
