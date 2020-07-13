@@ -1,6 +1,7 @@
 #ifndef __AONFP_DETAIL_DETAIL_HPP__
 #define __AONFP_DETAIL_DETAIL_HPP__
 #include <cstdint>
+#include <type_traits>
 namespace aonfp {
 
 namespace detail {
@@ -90,15 +91,20 @@ template <> inline uint8_t copy_mantissa<uint8_t>(const float v) {
 }
 
 template <class T>
-inline T copy_sign_exponent(const double v) {
+inline T copy_sign_exponent(const double v, uo_flow_t& uo) {
 	const auto sign = (*reinterpret_cast<const uint32_t*>(&v)) & 0x8000000000000000lu;
 	const auto exponent = ((*reinterpret_cast<const uint32_t*>(&v)) & 0x7ff0000000000000lu) >> 52;
 	const auto res_s = static_cast<T>((sign & 0x8000000000000000lu) >> (64 - 8 * sizeof(T)));
-	const auto res_exponent = exponent + detail::get_default_exponent_bias(sizeof(T) * 8) - detail::get_default_exponent_bias(11);
-	if (res_exponent >> (sizeof(T) * 8 - 1) == 1) {
-		return static_cast<T>(0);
+	const auto src_exponent = static_cast<typename std::make_signed<T>::type>(exponent) - detail::get_default_exponent_bias(11);
+	const auto dst_exponent = static_cast<T>(src_exponent + detail::get_default_exponent_bias(sizeof(T) * 8));
+	if (dst_exponent >> (sizeof(T) * 8 - 1)) {
+		if (src_exponent >> (sizeof(T) * 8 - 1)) {
+			uo = uo_flow_underflow;
+		} else {
+			uo = uo_flow_underflow;
+		}
 	}
-	return res_s | res_exponent;
+	return res_s | dst_exponent;
 }
 
 } //namespace detail
