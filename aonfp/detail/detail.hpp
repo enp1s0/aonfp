@@ -17,6 +17,13 @@ template <> constexpr void set_nan_exponent<uint16_t>(uint16_t& v) {v = 0x7fff;}
 template <> constexpr void set_nan_exponent<uint8_t >(uint8_t & v) {v = 0x7f;}
 
 template <class T>
+constexpr void set_nan_mantissa(T& v);
+template <> constexpr void set_nan_mantissa<uint64_t>(uint64_t& v) {v = 0xfffffffffffffffflu;}
+template <> constexpr void set_nan_mantissa<uint32_t>(uint32_t& v) {v = 0xffffffff;}
+template <> constexpr void set_nan_mantissa<uint16_t>(uint16_t& v) {v = 0xffff;}
+template <> constexpr void set_nan_mantissa<uint8_t >(uint8_t & v) {v = 0xff;}
+
+template <class T>
 constexpr void set_inf_exponent(T& v);
 template <> constexpr void set_inf_exponent<uint64_t>(uint64_t& v) {v = 0x7ffffffffffffffflu | (v & 0x8000000000000000lu);}
 template <> constexpr void set_inf_exponent<uint32_t>(uint32_t& v) {v = 0x7fffffff | (v & 0x80000000);}
