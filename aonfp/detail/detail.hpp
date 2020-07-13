@@ -31,7 +31,7 @@ template <> constexpr uint16_t get_inf_exponent<uint16_t>(uint16_t& v) {return 0
 template <> constexpr uint8_t  get_inf_exponent<uint8_t >(uint8_t & v) {return 0x7f | (v & 0x80);}
 
 template <class T>
-constexpr void get_inf_mantissa(T& v) {return static_cast<T>(0);};
+constexpr T get_inf_mantissa(T& v) {return static_cast<T>(0);};
 
 template <class T>
 inline void copy_mantissa(T& mantissa, const double v);
