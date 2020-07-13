@@ -92,8 +92,8 @@ template <> inline uint8_t copy_mantissa<uint8_t>(const float v) {
 
 template <class T>
 inline T copy_sign_exponent(const double v, uo_flow_t& uo) {
-	const auto sign = (*reinterpret_cast<const uint32_t*>(&v)) & 0x8000000000000000lu;
-	const auto exponent = ((*reinterpret_cast<const uint32_t*>(&v)) & 0x7ff0000000000000lu) >> 52;
+	const auto sign = (*reinterpret_cast<const uint64_t*>(&v)) & 0x8000000000000000lu;
+	const auto exponent = ((*reinterpret_cast<const uint64_t*>(&v)) & 0x7ff0000000000000lu) >> 52;
 	const auto res_s = static_cast<T>((sign & 0x8000000000000000lu) >> (64 - 8 * sizeof(T)));
 	const auto src_exponent = static_cast<typename std::make_signed<T>::type>(exponent) - detail::get_default_exponent_bias(11);
 	const auto dst_exponent = static_cast<T>(src_exponent + detail::get_default_exponent_bias(sizeof(T) * 8));
