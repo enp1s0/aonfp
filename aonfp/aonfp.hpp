@@ -9,7 +9,7 @@ inline void convert(S_EXP_T& s_exp, MANTISSA_T& mantissa, const T v) {
 	int digit_up;
 	mantissa = detail::copy_mantissa<MANTISSA_T>(v, digit_up);
 	detail::uo_flow_t uo;
-	detail::copy_sign_exponent<S_EXP_T>(v, digit_up, uo);
+	s_exp = detail::copy_sign_exponent<S_EXP_T>(v, digit_up, uo);
 
 	if (uo == detail::uo_flow_overflow) {
 		s_exp = detail::get_inf_exponent<S_EXP_T>(0);
