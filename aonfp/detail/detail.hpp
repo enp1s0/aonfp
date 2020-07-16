@@ -121,6 +121,24 @@ inline T copy_sign_exponent(const double v, const int up_digit, uo_flow_t& uo) {
 	return res_s | dst_exponent;
 }
 
+template <class T>
+inline T copy_sign_exponent(const float v, const int up_digit, uo_flow_t& uo) {
+	const auto sign = (*reinterpret_cast<const uint32_t*>(&v)) & 0x80000000lu;
+	const auto exponent = (((*reinterpret_cast<const uint32_t*>(&v)) & 0x7f800000lu) >> 23) + up_digit;
+	const auto res_s = static_cast<T>((sign & 0x80000000lu) >> (32 - 8 * sizeof(T)));
+	const auto src_exponent = static_cast<typename std::make_signed<T>::type>(exponent) - detail::get_default_exponent_bias(8);
+	const auto dst_exponent = static_cast<T>(src_exponent + detail::get_default_exponent_bias(sizeof(T) * 8 - 1));
+	if (dst_exponent >> (sizeof(T) * 8 - 1)) {
+		if (src_exponent > 0) {
+			uo = uo_flow_overflow;
+		} else {
+			uo = uo_flow_underflow;
+		}
+	}
+	uo = uo_flow_non;
+	return res_s | dst_exponent;
+}
+
 } //namespace detail
 } //namespace aonfp
 #endif
