@@ -17,6 +17,12 @@ struct bitstring_t {using type = T;};
 template <> struct bitstring_t<float > {using type = uint32_t;};
 template <> struct bitstring_t<double> {using type = uint64_t;};
 
+template <class T>
+union bitstring_union {
+	T fp;
+	bitstring_t<T> bitstring;
+};
+
 constexpr unsigned get_default_exponent_bias(const unsigned exponent_size) {
 	return (1 << (exponent_size - 1)) - 1;
 }
