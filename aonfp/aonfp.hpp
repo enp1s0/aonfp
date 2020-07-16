@@ -6,8 +6,10 @@
 namespace aonfp {
 template <class T, class S_EXP_T, class MANTISSA_T>
 inline void convert(S_EXP_T& s_exp, MANTISSA_T& mantissa, const T v) {
+	int digit_up;
+	mantissa = detail::copy_mantissa(v, digit_up);
 	detail::uo_flow_t uo;
-	detail::copy_sign_exponent<S_EXP_T>(s_exp, uo);
+	detail::copy_sign_exponent<S_EXP_T>(s_exp, digit_up, uo);
 
 	if (uo == detail::uo_flow_overflow) {
 		s_exp = detail::get_inf_exponent<S_EXP_T>(0);
