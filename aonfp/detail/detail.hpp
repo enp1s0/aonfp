@@ -12,6 +12,11 @@ enum uo_flow_t {
 	uo_flow_underflow,
 };
 
+template <class T>
+struct bitstring_t {using type = T;};
+template <> struct bitstring_t<float > {using type = uint32_t;};
+template <> struct bitstring_t<double> {using type = uint64_t;};
+
 constexpr unsigned get_default_exponent_bias(const unsigned exponent_size) {
 	return (1 << (exponent_size - 1)) - 1;
 }
