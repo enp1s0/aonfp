@@ -151,60 +151,68 @@ inline T copy_sign_exponent(const float v, const int move_up, uo_flow_t& uo) {
 }
 
 template <class T, class MANTISSA_T>
-inline T copy_mantissa(const MANTISSA_T mantissa, int& move_up);
+inline T copy_mantissa(const MANTISSA_T mantissa, T src_fp, int& move_up);
 
-template <> inline double copy_mantissa<double, uint64_t>(const uint64_t m, int& move_up) {
+template <> inline double copy_mantissa<double, uint64_t>(const uint64_t m, const double src_fp, int& move_up) {
 	const auto shifted_m = m >> 12;
 	const auto s = (m & 0x800lu) >> 11;
 	const auto shifted_m_a = shifted_m + s;
 	move_up = (shifted_m_a >> 52);
-	return *reinterpret_cast<const double*>(&shifted_m_a);
+	const auto full_bitstring = shifted_m_a | (*reinterpret_cast<const uint64_t*>(&src_fp) & 0xfff0000000000000lu);
+	return *reinterpret_cast<const double*>(&full_bitstring);
 }
 
-template <> inline double copy_mantissa<double, uint32_t>(const uint32_t m, int& move_up) {
+template <> inline double copy_mantissa<double, uint32_t>(const uint32_t m, const double src_fp, int& move_up) {
 	const auto shifted_m = static_cast<uint64_t>(m) << 20;
 	move_up = 0;
-	return *reinterpret_cast<const double*>(&shifted_m);
+	const auto full_bitstring = shifted_m | (*reinterpret_cast<const uint64_t*>(&src_fp) & 0xfff0000000000000lu);
+	return *reinterpret_cast<const double*>(&full_bitstring);
 }
 
-template <> inline double copy_mantissa<double, uint16_t>(const uint16_t m, int& move_up) {
+template <> inline double copy_mantissa<double, uint16_t>(const uint16_t m, const double src_fp, int& move_up) {
 	const auto shifted_m = static_cast<uint64_t>(m) << 36;
 	move_up = 0;
-	return *reinterpret_cast<const double*>(&shifted_m);
+	const auto full_bitstring = shifted_m | (*reinterpret_cast<const uint64_t*>(&src_fp) & 0xfff0000000000000lu);
+	return *reinterpret_cast<const double*>(&full_bitstring);
 }
 
-template <> inline double copy_mantissa<double, uint8_t>(const uint8_t m, int& move_up) {
+template <> inline double copy_mantissa<double, uint8_t>(const uint8_t m, const double src_fp, int& move_up) {
 	const auto shifted_m = static_cast<uint64_t>(m) << 44;
 	move_up = 0;
-	return *reinterpret_cast<const double*>(&shifted_m);
+	const auto full_bitstring = shifted_m | (*reinterpret_cast<const uint64_t*>(&src_fp) & 0xfff0000000000000lu);
+	return *reinterpret_cast<const double*>(&full_bitstring);
 }
 
-template <> inline float copy_mantissa<float , uint64_t>(const uint64_t m, int& move_up) {
+template <> inline float copy_mantissa<float , uint64_t>(const uint64_t m, const float src_fp, int& move_up) {
 	const auto shifted_m = static_cast<uint32_t>(m >> 41);
 	const auto s = static_cast<uint32_t>((m & 0x10000000000lu) >> 40);
 	const auto shifted_m_a = shifted_m + s;
 	move_up = (shifted_m_a >> 23);
-	return *reinterpret_cast<const float*>(&shifted_m_a);
+	const auto full_bitstring = shifted_m_a | (*reinterpret_cast<const uint32_t*>(&src_fp) & 0xff800000);
+	return *reinterpret_cast<const double*>(&full_bitstring);
 }
 
-template <> inline float copy_mantissa<float , uint32_t>(const uint32_t m, int& move_up) {
+template <> inline float copy_mantissa<float , uint32_t>(const uint32_t m, const float src_fp, int& move_up) {
 	const auto shifted_m = m >> 9;
 	const auto s = (m & 0x80) >> 8;
 	const auto shifted_m_a = shifted_m + s;
 	move_up = (shifted_m_a >> 23);
-	return *reinterpret_cast<const float*>(&shifted_m_a);
+	const auto full_bitstring = shifted_m_a | (*reinterpret_cast<const uint32_t*>(&src_fp) & 0xff800000);
+	return *reinterpret_cast<const double*>(&full_bitstring);
 }
 
-template <> inline float copy_mantissa<float , uint16_t>(const uint16_t m, int& move_up) {
+template <> inline float copy_mantissa<float , uint16_t>(const uint16_t m, const float src_fp, int& move_up) {
 	const auto shifted_m = static_cast<uint32_t>(m) << 7;
 	move_up = 0;
-	return *reinterpret_cast<const float*>(&shifted_m);
+	const auto full_bitstring = shifted_m | (*reinterpret_cast<const uint32_t*>(&src_fp) & 0xff800000);
+	return *reinterpret_cast<const float*>(&full_bitstring);
 }
 
-template <> inline float copy_mantissa<float , uint8_t>(const uint8_t m, int& move_up) {
+template <> inline float copy_mantissa<float , uint8_t>(const uint8_t m, const float src_fp, int& move_up) {
 	const auto shifted_m = static_cast<uint32_t>(m) << 15;
 	move_up = 0;
-	return *reinterpret_cast<const float*>(&shifted_m);
+	const auto full_bitstring = shifted_m | (*reinterpret_cast<const uint32_t*>(&src_fp) & 0xff800000);
+	return *reinterpret_cast<const float*>(&full_bitstring);
 }
 
 } //namespace detail
