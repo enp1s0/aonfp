@@ -21,24 +21,18 @@ template <> struct bitstring_t<double> {using type = uint64_t;};
 template <> struct bitstring_t<const float > {using type = uint32_t;};
 template <> struct bitstring_t<const double> {using type = uint64_t;};
 
-template <class T>
-union bitstring_union {
-	T fp;
-	bitstring_t<T> bitstring;
-};
-
-constexpr unsigned get_default_exponent_bias(const unsigned exponent_size) {
+constexpr unsigned long get_default_exponent_bias(const unsigned exponent_size) {
 	return (1 << (exponent_size - 1)) - 1;
 }
 
 template <class T>
-constexpr T get_exponent_bitstring(const T s_exp) {return ((static_cast<T>(1) << (sizeof(T) - 1)) - 1) & s_exp;}
+constexpr T get_exponent_bitstring(const T s_exp) {return ((static_cast<T>(1) << (sizeof(T) * 8 - 1)) - 1) & s_exp;}
 
 template <class T>
-constexpr T get_sign_bitstring(const T s_exp) {return s_exp & (static_cast<T>(1) << (sizeof(T) - 1));}
+constexpr T get_sign_bitstring(const T s_exp) {return s_exp & (static_cast<T>(1) << (sizeof(T) * 8 - 1));}
 
 template <class T>
-constexpr T get_nan_sign_exponent_bitstring() {return (static_cast<T>(1) << (sizeof(T) - 1)) - 1;}
+constexpr T get_nan_sign_exponent_bitstring() {return (static_cast<T>(1) << (sizeof(T) * 8 - 1)) - 1;}
 
 template <class T>
 constexpr T get_nan_mantissa_bitstring() {return ~static_cast<T>(0);}
