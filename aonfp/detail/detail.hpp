@@ -57,9 +57,9 @@ constexpr T get_zero_mantissa_bitstring() {return static_cast<T>(0);};
 
 
 // range getter
-constexpr unsigned get_max_exponent(const unsigned expopent_length) {return get_default_exponent_bias(expopent_length);}
+constexpr unsigned long get_max_exponent(const unsigned expopent_length) {return get_default_exponent_bias(expopent_length);}
 
-constexpr int get_min_exponent(const unsigned exponent_length) {return 1 - static_cast<int>(get_default_exponent_bias(exponent_length));}
+constexpr long get_min_exponent(const unsigned exponent_length) {return 1 - static_cast<long>(get_default_exponent_bias(exponent_length));}
 
 // composer / decomposer
 template <class T>
