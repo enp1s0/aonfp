@@ -46,6 +46,12 @@ template <class T>
 constexpr T get_zero_mantissa() {return static_cast<T>(0);};
 
 template <class T>
+constexpr T get_exponent(const T s_exp) {return get_nan_exponent<T>(0) & s_exp;}
+
+template <class T>
+constexpr T get_sign(const T s_exp) {return get_zero_mantissa<T>(s_exp);}
+
+template <class T>
 inline T copy_mantissa(const double v, int& move_up);
 template <> inline uint64_t copy_mantissa<uint64_t>(const double v, int& move_up) {
 	move_up = 0;
