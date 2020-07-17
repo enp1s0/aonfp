@@ -51,5 +51,37 @@ void test_compose_decompose() {
 }
 
 int main() {
+	test_compose_decompose<double, uint64_t, uint64_t>();
+	test_compose_decompose<double, uint64_t, uint32_t>();
+	test_compose_decompose<double, uint64_t, uint16_t>();
+	test_compose_decompose<double, uint64_t, uint8_t>();
+	test_compose_decompose<double, uint32_t, uint64_t>();
 	test_compose_decompose<double, uint32_t, uint32_t>();
+	test_compose_decompose<double, uint32_t, uint16_t>();
+	test_compose_decompose<double, uint32_t, uint8_t>();
+	test_compose_decompose<double, uint16_t, uint64_t>();
+	test_compose_decompose<double, uint16_t, uint32_t>();
+	test_compose_decompose<double, uint16_t, uint16_t>();
+	test_compose_decompose<double, uint16_t, uint8_t>();
+	test_compose_decompose<double, uint8_t, uint64_t>();
+	test_compose_decompose<double, uint8_t, uint32_t>();
+	test_compose_decompose<double, uint8_t, uint16_t>();
+	test_compose_decompose<double, uint8_t, uint8_t>();
+
+	test_compose_decompose<float, uint64_t, uint64_t>();
+	test_compose_decompose<float, uint64_t, uint32_t>();
+	test_compose_decompose<float, uint64_t, uint16_t>();
+	test_compose_decompose<float, uint64_t, uint8_t>();
+	test_compose_decompose<float, uint32_t, uint64_t>();
+	test_compose_decompose<float, uint32_t, uint32_t>();
+	test_compose_decompose<float, uint32_t, uint16_t>();
+	test_compose_decompose<float, uint32_t, uint8_t>();
+	test_compose_decompose<float, uint16_t, uint64_t>();
+	test_compose_decompose<float, uint16_t, uint32_t>();
+	test_compose_decompose<float, uint16_t, uint16_t>();
+	test_compose_decompose<float, uint16_t, uint8_t>();
+	test_compose_decompose<float, uint8_t, uint64_t>();
+	test_compose_decompose<float, uint8_t, uint32_t>();
+	test_compose_decompose<float, uint8_t, uint16_t>();
+	test_compose_decompose<float, uint8_t, uint8_t>();
 }
