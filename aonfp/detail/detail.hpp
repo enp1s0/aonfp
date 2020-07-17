@@ -28,28 +28,28 @@ constexpr unsigned get_default_exponent_bias(const unsigned exponent_size) {
 }
 
 template <class T>
-constexpr T get_nan_sign_exponent_bitstring(T v) {return (static_cast<T>(1) << (sizeof(T) - 1)) - 1;}
+constexpr T get_exponent_bitstring(const T s_exp) {return ((static_cast<T>(1) << (sizeof(T) - 1)) - 1) & s_exp;}
 
 template <class T>
-constexpr T get_nan_mantissa_bitstring(T v) {return ~static_cast<T>(0);}
+constexpr T get_sign_bitstring(const T s_exp) {return s_exp & (static_cast<T>(1) << (sizeof(T) - 1));}
 
 template <class T>
-constexpr T get_inf_sign_exponent_bitstring(T v) {return get_nan_sign_exponent_bitstring<T>(0) | (v & (static_cast<T>(1) << (sizeof(T) - 1)));}
+constexpr T get_nan_sign_exponent_bitstring() {return (static_cast<T>(1) << (sizeof(T) - 1)) - 1;}
+
+template <class T>
+constexpr T get_nan_mantissa_bitstring() {return ~static_cast<T>(0);}
+
+template <class T>
+constexpr T get_inf_sign_exponent_bitstring(T s_exp) {return get_nan_sign_exponent_bitstring<T>() | get_sign_bitstring(s_exp);}
 
 template <class T>
 constexpr T get_inf_mantissa_bitstring() {return static_cast<T>(0);};
 
 template <class T>
-constexpr T get_zero_sign_exponent_bitstring(T v) {return (static_cast<T>(1) << (sizeof(T) - 1)) & v;}
+constexpr T get_zero_sign_exponent_bitstring(T s_exp = 0) {return get_sign_bitstring(s_exp);}
 
 template <class T>
 constexpr T get_zero_mantissa_bitstring() {return static_cast<T>(0);};
-
-template <class T>
-constexpr T get_exponent_bitstring(const T s_exp) {return get_nan_sign_exponent_bitstring<T>(0) & s_exp;}
-
-template <class T>
-constexpr T get_sign_bitstring(const T s_exp) {return get_zero_mantissa_bitstring<T>(s_exp);}
 
 template <class T>
 inline T decompose_mantissa(const double v, int& move_up);
