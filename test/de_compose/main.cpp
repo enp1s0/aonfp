@@ -23,6 +23,8 @@ void test_compose_decompose() {
 
 	const auto threshold = std::pow(10.0f, -std::log10(2.0) * std::min<unsigned>(sizeof(MANTISSA_T) * 8, aonfp::detail::standard_fp::get_mantissa_size<T>()));
 
+	std::size_t passed = 0;
+
 	for (std::size_t c = 0; c < C; c++) {
 		const auto test_value = dist(mt);
 
@@ -36,8 +38,16 @@ void test_compose_decompose() {
 
 		if (error > threshold) {
 			std::printf("{org = %e, cvt = %e} error = %e > [threshold:%e]\n", test_value, decomposed_value, error, threshold);
+		} else {
+			passed++;
 		}
 	}
+	std::printf("TEST {%10s, ES %10s, M %10s} : %lu / %lu is passed\n",
+				get_type_name<T>().c_str(),
+				get_type_name<S_EXP_T>().c_str(),
+				get_type_name<MANTISSA_T>().c_str(),
+				passed, C
+				);
 }
 
 int main() {
