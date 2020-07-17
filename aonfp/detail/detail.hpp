@@ -213,7 +213,7 @@ template <> inline float compose_mantissa<float , uint8_t>(const uint8_t m, cons
 template <class T, class S_EXP_T>
 inline T compose_sign_exponent(const S_EXP_T s_exp, const T src_fp, const int move_up) {
 	const auto exponent_bitstring = get_exponent_bitstring(s_exp);
-	const auto exponent = static_cast<typename std::make_signed<S_EXP_T>::type>(exponent_bitstring) - get_default_exponent_bias(sizeof(S_EXP_T) * 8 - 1) + move_up;
+	const auto exponent = static_cast<typename std::make_signed<S_EXP_T>::type>(static_cast<typename std::make_signed<S_EXP_T>::type>(exponent_bitstring) - get_default_exponent_bias(sizeof(S_EXP_T) * 8 - 1) + move_up);
 	if (exponent >= get_max_exponent(standard_fp::get_exponent_size<T>())) {
 		return standard_fp::get_infinity<T>(src_fp);
 	}
@@ -223,7 +223,7 @@ inline T compose_sign_exponent(const S_EXP_T s_exp, const T src_fp, const int mo
 	const auto dst_exponent = static_cast<typename bitstring_t<T>::type>(exponent + get_default_exponent_bias(standard_fp::get_exponent_size<T>()));
 	const auto dst_exponent_bitstring = dst_exponent << standard_fp::get_mantissa_size<T>();
 
-	const auto dst_sign_bitstring = static_cast<typename bitstring_t<T>::type>(get_sign_bitstring(s_exp) >> (sizeof(S_EXP_T) * 8 - 1)) << (sizeof(S_EXP_T) * 8 - 1);
+	const auto dst_sign_bitstring = static_cast<typename bitstring_t<T>::type>(get_sign_bitstring(s_exp) >> (sizeof(S_EXP_T) * 8 - 1)) << (sizeof(T) * 8 - 1);
 
 	const auto dst_mantissa_bitstring = *reinterpret_cast<const typename bitstring_t<T>::type*>(&src_fp) & ((static_cast<typename bitstring_t<T>::type>(1) << standard_fp::get_mantissa_size<T>()) - 1);
 
