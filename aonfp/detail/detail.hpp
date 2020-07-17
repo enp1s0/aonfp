@@ -18,6 +18,8 @@ template <class T>
 struct bitstring_t {using type = T;};
 template <> struct bitstring_t<float > {using type = uint32_t;};
 template <> struct bitstring_t<double> {using type = uint64_t;};
+template <> struct bitstring_t<const float > {using type = uint32_t;};
+template <> struct bitstring_t<const double> {using type = uint64_t;};
 
 template <class T>
 union bitstring_union {
