@@ -6,6 +6,15 @@
 
 constexpr std::size_t C = 1lu << 3;
 
+template <class T>
+std::string get_type_name();
+template <> std::string get_type_name<float   >() {return "float";}
+template <> std::string get_type_name<double  >() {return "double";}
+template <> std::string get_type_name<uint64_t>() {return "uint64_t";}
+template <> std::string get_type_name<uint32_t>() {return "uint32_t";}
+template <> std::string get_type_name<uint16_t>() {return "uint16_t";}
+template <> std::string get_type_name<uint8_t >() {return "uint8_t";}
+
 template <class T, class S_EXP_T, class MANTISSA_T>
 void test_compose_decompose() {
 	std::mt19937 mt(std::random_device{}());
