@@ -28,7 +28,7 @@ template <class T, class S_EXP_T, class MANTISSA_T>
 inline T compose(const S_EXP_T s_exp, const MANTISSA_T mantissa) {
 	int move_up;
 	const auto fp_mantissa = detail::compose_mantissa<T, MANTISSA_T>(mantissa, 1, move_up);
-	return detail::compose_sign_exponent(s_exp, fp_mantissa, move_up);
+	return detail::compose_sign_exponent<T, S_EXP_T>(s_exp, fp_mantissa, move_up);
 }
 } //namespace aonfp
 #endif
