@@ -1,5 +1,6 @@
 #ifndef __AONFP_DETAIL_STANDARDFP_HPP__
 #define __AONFP_DETAIL_STANDARDFP_HPP__
+#include <cmath>
 #include <cstdint>
 
 namespace aonfp {
@@ -15,6 +16,18 @@ template <class T>
 constexpr unsigned get_mantissa_size();
 template <> constexpr unsigned get_mantissa_size<float >() {return 23;}
 template <> constexpr unsigned get_mantissa_size<double>() {return 52;}
+
+template <class T>
+constexpr T get_nan(const T original_fp) {
+	// TODO: sign
+	return NAN;
+}
+
+template <class T>
+constexpr T get_infinity(const T original_fp) {
+	// TODO: sign
+	return INFINITY;
+}
 } // namespace standard_fp
 } // namespace detail
 } // namespace aonfp
