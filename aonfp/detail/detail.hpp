@@ -1,9 +1,11 @@
 #ifndef __AONFP_DETAIL_DETAIL_HPP__
 #define __AONFP_DETAIL_DETAIL_HPP__
+#include <limits>
 #include <cstdint>
 #include <type_traits>
-namespace aonfp {
+#include "standard_fp.hpp"
 
+namespace aonfp {
 namespace detail {
 
 enum uo_flow_t {
