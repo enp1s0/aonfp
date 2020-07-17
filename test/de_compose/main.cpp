@@ -21,7 +21,7 @@ void test_compose_decompose() {
 
 	std::uniform_real_distribution<T> dist(-1, 1);
 
-	const auto threshold = std::pow(10.0f, -std::log10(2.0) * std::min<unsigned>(sizeof(MANTISSA_T) * 8, aonfp::detail::standard_fp::get_mantissa_size<T>()));
+	const auto threshold = 1.5 * std::pow(10.0f, -std::log10(2.0) * std::min<unsigned>(sizeof(MANTISSA_T) * 8, aonfp::detail::standard_fp::get_mantissa_size<T>()));
 
 	std::size_t passed = 0;
 
