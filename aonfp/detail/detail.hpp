@@ -152,7 +152,7 @@ inline T decompose_sign_exponent(const float v, const int move_up, uo_flow_t& uo
 }
 
 template <class T, class MANTISSA_T>
-inline T compose_mantissa(const MANTISSA_T mantissa, T src_fp, int& move_up);
+inline T compose_mantissa(const MANTISSA_T mantissa, const T src_fp, int& move_up);
 
 template <> inline double compose_mantissa<double, uint64_t>(const uint64_t m, const double src_fp, int& move_up) {
 	const auto shifted_m = m >> 12;
