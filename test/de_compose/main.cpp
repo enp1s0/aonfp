@@ -42,11 +42,12 @@ void test_compose_decompose() {
 			passed++;
 		}
 	}
-	std::printf("TEST {%10s, ES %10s, M %10s} : %lu / %lu is passed\n",
+	std::printf("TEST {%10s, ES %10s, M %10s} : %lu / %lu (%3.3f \%)\n",
 				get_type_name<T>().c_str(),
 				get_type_name<S_EXP_T>().c_str(),
 				get_type_name<MANTISSA_T>().c_str(),
-				passed, C
+				passed, C,
+				static_cast<double>(passed) / C * 100.0
 				);
 }
 
