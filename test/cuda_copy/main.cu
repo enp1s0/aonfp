@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #include <random>
 #include <aonfp/aonfp.hpp>
 #include <aonfp/cuda_copy.hpp>
@@ -25,7 +26,15 @@ int main() {
 		aonfp::decompose(s_exp_array[i], mantissa_array[i], dist(mt));
 	}
 
+	cudaDeviceSynchronize();
+	const auto start_clock = std::chrono::system_clock::now();
 	aonfp::cuda::copy_to_device(device_array, s_exp_array, mantissa_array, N);
+	cudaDeviceSynchronize();
+	const auto end_clock = std::chrono::system_clock::now();
+
+	const auto elapsed_time = std::chrono::duration_cast<std::chrono::microseconds>(end_clock - start_clock).count() * 1.e-6;
+
+	std::printf("Bandwidth between host and device memory : %e [GiB/s]\n", N * (sizeof(S_EXP_T) + sizeof(MANTISSA_T)) / elapsed_time / (1lu << 30));
 
 	cudaFreeHost(s_exp_array);
 	cudaFreeHost(mantissa_array);
