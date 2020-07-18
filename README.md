@@ -3,17 +3,6 @@
 ## Description
 AONFP is a header only C++ library for floating point data compression.
 
-### CUDA extension
-AONFP has a function which copies an AONFP format array in host memory to device memory while converting to IEEE format.
-And also it has a reverse function.
-
-![cuda-copy](docs/aonfp_cuda_copy.svg)
-
-To use this feature, you need to build static library and link it to your application.
-
-#### Build
-#### Link
-
 ## Supported data format
 
 ### Standard floating point
@@ -44,3 +33,14 @@ aonfp::decompose(s_exp, mantissa, value);
 // compose
 const auto decomposed_value = aonfp::compose<double>(s_exp, mantissa);
 ```
+
+### CUDA extension
+AONFP has a function which copies an AONFP format array in host memory to device memory while converting to IEEE format.
+And also it has a reverse function.
+
+![cuda-copy](docs/aonfp_cuda_copy.svg)
+
+To use this feature, you need to build a static library and link it to your application.
+
+#### Build
+#### Link
