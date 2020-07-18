@@ -1,11 +1,25 @@
 # AONFP (Architecture Oriented Non-standard Floating Point)
 
-## Supported
+## Description
+AONFP is a header only C++ library for floating point data compression.
+
+### CUDA extension
+AONFP has a function which copies an AONFP format array in host memory to device memory while converting to IEEE format.
+And also it has a reverse function.
+
+![cuda-copy](docs/aonfp_cuda_copy.svg)
+
+To use this feature, you need to build static library and link it to your application.
+
+#### Build
+#### Link
+
+## Supported data format
 
 ### Standard floating point
 
-- `float`
-- `double`
+- `float` (IEEE 754 Binary32)
+- `double` (IEEE 754 Binary64)
 
 ### Decomposed data type
 Data types for `sign_exponent` and `mantissa` are
