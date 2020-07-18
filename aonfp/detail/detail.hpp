@@ -114,6 +114,9 @@ inline T decompose_sign_exponent(const double v, const int move_up, uo_flow_t& u
 	const auto sign = (*reinterpret_cast<const uint64_t*>(&v)) & 0x8000000000000000lu;
 	const auto exponent = (((*reinterpret_cast<const uint64_t*>(&v)) & 0x7ff0000000000000lu) >> 52) + move_up;
 	const auto res_s = static_cast<T>((sign & 0x8000000000000000lu) >> (64 - 8 * sizeof(T)));
+	if (!exponent) {
+		return res_s;
+	}
 	const auto src_exponent = static_cast<typename std::make_signed<T>::type>(exponent) - detail::get_default_exponent_bias(11);
 	const auto dst_exponent = static_cast<T>(src_exponent + detail::get_default_exponent_bias(sizeof(T) * 8 - 1));
 	if (dst_exponent >> (sizeof(T) * 8 - 1)) {
@@ -132,6 +135,9 @@ inline T decompose_sign_exponent(const float v, const int move_up, uo_flow_t& uo
 	const auto sign = ((*reinterpret_cast<const uint32_t*>(&v)) & 0x80000000) >> 31;
 	const auto exponent = (((*reinterpret_cast<const uint32_t*>(&v)) & 0x7f800000) >> 23) + move_up;
 	const auto res_s = static_cast<T>(sign) << (sizeof(T) * 8 - 1);
+	if (!exponent) {
+		return res_s;
+	}
 	const auto src_exponent = static_cast<typename std::make_signed<T>::type>(exponent) - detail::get_default_exponent_bias(8);
 	const auto dst_exponent = static_cast<T>(src_exponent + detail::get_default_exponent_bias(sizeof(T) * 8 - 1));
 	if (dst_exponent >> (sizeof(T) * 8 - 1)) {
