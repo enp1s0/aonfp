@@ -11,9 +11,9 @@ template <class T, class S_EXP_T, class MANTISSA_T>
 void test_compose_decompose() {
 	std::mt19937 mt(std::random_device{}());
 
-	std::uniform_real_distribution<T> dist(-1, 1);
+	std::uniform_real_distribution<T> dist(-10000, 10000);
 
-	const auto threshold = 1.5 * std::pow(10.0f, -std::log10(2.0) * std::min<unsigned>(sizeof(MANTISSA_T) * 8, aonfp::detail::standard_fp::get_mantissa_size<T>()));
+	const auto threshold_base = 2 * std::pow(10.0f, -std::log10(2.0) * std::min<unsigned>(sizeof(MANTISSA_T) * 8, aonfp::detail::standard_fp::get_mantissa_size<T>()));
 
 	std::size_t passed = 0;
 
@@ -27,6 +27,7 @@ void test_compose_decompose() {
 		const auto decomposed_value = aonfp::compose<T>(s_exp, mantissa);
 
 		const auto error = std::abs(static_cast<double>(test_value) - decomposed_value);
+		const auto threshold = threshold_base * std::abs(static_cast<double>(test_value));
 
 		if (error > threshold) {
 			std::printf("SE : ");aonfp::detail::utils::print_hex(s_exp, true);
