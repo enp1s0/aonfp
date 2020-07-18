@@ -2,6 +2,11 @@
 
 ## Description
 AONFP is a header only C++ library for floating point data compression.
+It decomposes a IEEE standard floating point to two bitstrings, one is sign and exponent and the other one is mantissa.
+
+AONFP restricts the type of these bitstrings to `uint8/16/32/64` to reduce complexity.
+
+![aonfp-format](docs/aonfp_format.svg)
 
 ## Supported data format
 
