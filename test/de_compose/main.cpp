@@ -1,19 +1,11 @@
 #include <aonfp/aonfp.hpp>
+#include <aonfp/detail/utils.hpp>
 #include <iostream>
 #include <random>
 #include <cmath>
 #include <limits>
 
-constexpr std::size_t C = 1lu << 3;
-
-template <class T>
-std::string get_type_name();
-template <> std::string get_type_name<float   >() {return "float";}
-template <> std::string get_type_name<double  >() {return "double";}
-template <> std::string get_type_name<uint64_t>() {return "uint64_t";}
-template <> std::string get_type_name<uint32_t>() {return "uint32_t";}
-template <> std::string get_type_name<uint16_t>() {return "uint16_t";}
-template <> std::string get_type_name<uint8_t >() {return "uint8_t";}
+constexpr std::size_t C = 1lu << 20;
 
 template <class T, class S_EXP_T, class MANTISSA_T>
 void test_compose_decompose() {
@@ -37,15 +29,17 @@ void test_compose_decompose() {
 		const auto error = std::abs(static_cast<double>(test_value) - decomposed_value);
 
 		if (error > threshold) {
+			std::printf("SE : ");aonfp::detail::utils::print_hex(s_exp, true);
+			std::printf("M  : ");aonfp::detail::utils::print_hex(mantissa, true);
 			std::printf("{org = %e, cvt = %e} error = %e > [threshold:%e]\n", test_value, decomposed_value, error, threshold);
 		} else {
 			passed++;
 		}
 	}
-	std::printf("TEST {%10s, ES %10s, M %10s} : %lu / %lu (%3.3f \%)\n",
-				get_type_name<T>().c_str(),
-				get_type_name<S_EXP_T>().c_str(),
-				get_type_name<MANTISSA_T>().c_str(),
+	std::printf("TEST {%10s, ES %10s, M %10s} : %lu / %lu (%3.3f %%)\n",
+				aonfp::detail::utils::get_type_name_string<T>(),
+				aonfp::detail::utils::get_type_name_string<S_EXP_T>(),
+				aonfp::detail::utils::get_type_name_string<MANTISSA_T>(),
 				passed, C,
 				static_cast<double>(passed) / C * 100.0
 				);
