@@ -62,6 +62,7 @@ template <> inline uint64_t decompose_mantissa<uint64_t>(const double v, int& mo
 	move_up = 0;
 	return (*reinterpret_cast<const uint64_t*>(&v)) << 12;
 }
+
 template <> inline uint32_t decompose_mantissa<uint32_t>(const double v, int& move_up) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
 	const auto r_s = (mantissa_bs & 0x80000lu) << 1;
@@ -69,6 +70,7 @@ template <> inline uint32_t decompose_mantissa<uint32_t>(const double v, int& mo
 	move_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
 	return mantissa_bs_a >> 20;
 }
+
 template <> inline uint16_t decompose_mantissa<uint16_t>(const double v, int& move_up) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
 	const auto r_s = (mantissa_bs & 0x800000000lu) << 1;
@@ -76,6 +78,7 @@ template <> inline uint16_t decompose_mantissa<uint16_t>(const double v, int& mo
 	move_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
 	return mantissa_bs_a >> 36;
 }
+
 template <> inline uint8_t decompose_mantissa<uint8_t>(const double v, int& move_up) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
 	const auto r_s = (mantissa_bs & 0x80000000000lu) << 1;
@@ -90,10 +93,12 @@ template <> inline uint64_t decompose_mantissa<uint64_t>(const float v, int& mov
 	move_up = 0;
 	return (*reinterpret_cast<const uint64_t*>(&v)) << (9 + 32);
 }
+
 template <> inline uint32_t decompose_mantissa<uint32_t>(const float v, int& move_up) {
 	move_up = 0;
 	return (*reinterpret_cast<const uint32_t*>(&v)) << 9;
 }
+
 template <> inline uint16_t decompose_mantissa<uint16_t>(const float v, int& move_up) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint32_t*>(&v)) & 0x7fffff;
 	const auto r_s = (mantissa_bs & 0x40) << 1;
@@ -101,6 +106,7 @@ template <> inline uint16_t decompose_mantissa<uint16_t>(const float v, int& mov
 	move_up = (mantissa_bs_a & 0x800000) >> 23;
 	return mantissa_bs_a >> 7;
 }
+
 template <> inline uint8_t decompose_mantissa<uint8_t>(const float v, int& move_up) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint32_t*>(&v)) & 0x7fffff;
 	const auto r_s = (mantissa_bs & 0x8000) << 1;
