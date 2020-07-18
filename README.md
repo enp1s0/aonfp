@@ -21,8 +21,8 @@ respectively.
 ## Sample code
 ```cpp
 const auto value = static_cast<double>(1.234);
-S_EXP_T s_exp;
-MANTISSA_T mantissa;
+uint8_t s_exp;
+uint64_t mantissa;
 
 // decompose
 aonfp::decompose(s_exp, mantissa, value);
