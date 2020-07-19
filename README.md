@@ -25,8 +25,7 @@ Data types for `sign_exponent` and `mantissa` are
 
 respectively.
 
-
-## Sample code
+### Sample code
 ```cpp
 const auto value = static_cast<double>(1.234);
 uint8_t s_exp;
@@ -39,7 +38,7 @@ aonfp::decompose(s_exp, mantissa, value);
 const auto decomposed_value = aonfp::compose<double>(s_exp, mantissa);
 ```
 
-### CUDA extension
+## CUDA extension
 AONFP has a function which copies an AONFP format array in host memory to device memory while converting to IEEE format.
 And also it has a reverse function.
 
@@ -47,5 +46,20 @@ And also it has a reverse function.
 
 To use this feature, you need to build a static library and link it to your application.
 
-#### Build
-#### Link
+### Build
+```bash
+make
+```
+
+### Sample code
+```cpp
+#include <aonfp/cuda_copy.hpp>
+
+aonfp::cuda::copy_to_device(device_array, src_s_exp_array, src_mantissa_array, N);
+aonfp::cuda::copy_to_host(dst_s_exp_array, dst_mantissa_array, device_array, N);
+```
+
+### Link
+```bash
+nvcc ... -L/path/to/lib_dir -laonfp_cuda_copy
+```
