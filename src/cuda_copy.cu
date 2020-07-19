@@ -11,11 +11,11 @@ __global__ void copy_to_device_kernel(T *const dst_ptr, const S_EXP_T *const s_e
 	const auto s_exp = s_exp_ptr[tid];
 	const auto mantissa = mantissa_ptr[tid];
 
-	dst_ptr[tid] = aonfp::compose<T>(s_exp, dst_ptr);
+	dst_ptr[tid] = aonfp::compose<T>(s_exp, mantissa);
 }
 
 template <class S_EXP_T, class MANTISSA_T, class T>
-__global__ void copy_to_host_kernel(const S_EXP_T *const s_exp_ptr, const MANTISSA_T *const mantissa_ptr, const T* const src_ptr, const std::size_t N) {
+__global__ void copy_to_host_kernel(S_EXP_T *const s_exp_ptr, MANTISSA_T *const mantissa_ptr, const T* const src_ptr, const std::size_t N) {
 	const auto tid = blockIdx.x * blockDim.x + threadIdx.x;
 	if (tid >= N) {
 		return;
@@ -24,6 +24,9 @@ __global__ void copy_to_host_kernel(const S_EXP_T *const s_exp_ptr, const MANTIS
 	MANTISSA_T mantissa;
 
 	aonfp::decompose(s_exp, mantissa, src_ptr[tid]);
+
+	s_exp_ptr[tid] = s_exp;
+	mantissa_ptr[tid] = mantissa;
 }
 } // namespace
 
