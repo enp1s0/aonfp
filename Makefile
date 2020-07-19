@@ -22,3 +22,7 @@ $(OBJDIR)/libaonfp_cuda_copy.o: $(SRCDIR)/cuda_copy.cu
 $(OBJDIR)/libaonfp_cuda_copy.dlink.o: $(SRCDIR)/cuda_copy.cu
 	[ -d $(OBJDIR) ] || mkdir $(OBJDIR)
 	$(NVCC) -dlink -o $@ $< $(NVCCFLAGS) -m64
+
+clean:
+	rm -f $(OBJDIR)/*
+	rm -f $(LIBDIR)/*
