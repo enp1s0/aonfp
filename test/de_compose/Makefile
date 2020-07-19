@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++11 -I../../ -Wall
+CXXFLAGS=-std=c++11 -I../../include -Wall
 TARGET=de_compose.test
 
 $(TARGET):main.cpp
