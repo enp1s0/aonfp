@@ -80,5 +80,33 @@ int main() {
 	cudaFreeHost(src_mantissa_array);
 	cudaFreeHost(dst_s_exp_array);
 	cudaFreeHost(dst_mantissa_array);
+
+	// Memcpy bandwidth test
+	DEVICE_T* host_device_array;
+	cudaMallocHost(&host_device_array, sizeof(DEVICE_T) * N);
+	{
+		cudaDeviceSynchronize();
+		const auto start_clock = std::chrono::system_clock::now();
+		cudaMemcpy(device_array, host_device_array, sizeof(DEVICE_T) * N, cudaMemcpyDefault);
+		cudaDeviceSynchronize();
+		const auto end_clock = std::chrono::system_clock::now();
+
+		const auto elapsed_time = std::chrono::duration_cast<std::chrono::microseconds>(end_clock - start_clock).count() * 1.e-6;
+
+		std::printf("[cudaMemcpy] Host => Device : %e [GiB/s]\n", N * sizeof(DEVICE_T) / elapsed_time / (1lu << 30));
+	}
+	{
+		cudaDeviceSynchronize();
+		const auto start_clock = std::chrono::system_clock::now();
+		cudaMemcpy(host_device_array, device_array, sizeof(DEVICE_T) * N, cudaMemcpyDefault);
+		cudaDeviceSynchronize();
+		const auto end_clock = std::chrono::system_clock::now();
+
+		const auto elapsed_time = std::chrono::duration_cast<std::chrono::microseconds>(end_clock - start_clock).count() * 1.e-6;
+
+		std::printf("[cudaMemcpy] Device => Host : %e [GiB/s]\n", N * sizeof(DEVICE_T) / elapsed_time / (1lu << 30));
+	}
+
+	cudaFreeHost(host_device_array);
 	cudaFree(device_array);
 }
