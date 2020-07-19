@@ -63,3 +63,7 @@ aonfp::cuda::copy_to_host(dst_s_exp_array, dst_mantissa_array, device_array, N);
 ```bash
 nvcc ... -L/path/to/lib_dir -laonfp_cuda_copy
 ```
+
+#### More detail
+
+![cuda-copy-detail](./docs/aonfp_cuda_copy_detail.svg)
