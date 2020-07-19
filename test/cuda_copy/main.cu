@@ -25,21 +25,25 @@ int main() {
 	std::uniform_real_distribution<DEVICE_T> dist(-1000.0, 1000.0);
 
 	DEVICE_T* device_array;
-	S_EXP_T* s_exp_array;
-	MANTISSA_T* mantissa_array;
+	S_EXP_T* src_s_exp_array;
+	S_EXP_T* dst_s_exp_array;
+	MANTISSA_T* src_mantissa_array;
+	MANTISSA_T* dst_mantissa_array;
 
 	cudaMalloc(&device_array, sizeof(DEVICE_T) * N);
-	cudaMallocHost(&s_exp_array, sizeof(S_EXP_T) * N);
-	cudaMallocHost(&mantissa_array, sizeof(MANTISSA_T) * N);
+	cudaMallocHost(&src_s_exp_array, sizeof(S_EXP_T) * N);
+	cudaMallocHost(&dst_s_exp_array, sizeof(S_EXP_T) * N);
+	cudaMallocHost(&src_mantissa_array, sizeof(MANTISSA_T) * N);
+	cudaMallocHost(&dst_mantissa_array, sizeof(MANTISSA_T) * N);
 
 	for (std::size_t i = 0; i < N; i++) {
-		aonfp::decompose(s_exp_array[i], mantissa_array[i], dist(mt));
+		aonfp::decompose(src_s_exp_array[i], src_mantissa_array[i], dist(mt));
 	}
 
 	{
 		cudaDeviceSynchronize();
 		const auto start_clock = std::chrono::system_clock::now();
-		aonfp::cuda::copy_to_device(device_array, s_exp_array, mantissa_array, N);
+		aonfp::cuda::copy_to_device(device_array, src_s_exp_array, src_mantissa_array, N);
 		cudaDeviceSynchronize();
 		const auto end_clock = std::chrono::system_clock::now();
 
@@ -54,7 +58,7 @@ int main() {
 	{
 		cudaDeviceSynchronize();
 		const auto start_clock = std::chrono::system_clock::now();
-		aonfp::cuda::copy_to_host(s_exp_array, mantissa_array, device_array, N);
+		aonfp::cuda::copy_to_host(dst_s_exp_array, dst_mantissa_array, device_array, N);
 		cudaDeviceSynchronize();
 		const auto end_clock = std::chrono::system_clock::now();
 
@@ -63,6 +67,18 @@ int main() {
 		std::printf("Device => Host : %e [GiB/s]\n", N * (sizeof(S_EXP_T) + sizeof(MANTISSA_T)) / elapsed_time / (1lu << 30));
 	}
 
-	cudaFreeHost(s_exp_array);
-	cudaFreeHost(mantissa_array);
+	double max_error = 0;
+	for (std::size_t i = 0; i < N; i++) {
+		const auto src = aonfp::compose<double>(src_s_exp_array[i], src_mantissa_array[i]);
+		const auto dst = aonfp::compose<double>(dst_s_exp_array[i], dst_mantissa_array[i]);
+		const auto error = std::abs((src + 1.0) - dst);
+		max_error = std::max(max_error, error);
+	}
+	std::printf("max_error : %e\n", max_error);
+
+	cudaFreeHost(src_s_exp_array);
+	cudaFreeHost(src_mantissa_array);
+	cudaFreeHost(dst_s_exp_array);
+	cudaFreeHost(dst_mantissa_array);
+	cudaFree(device_array);
 }
