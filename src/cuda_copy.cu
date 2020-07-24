@@ -21,7 +21,7 @@ std::string get_cuda_path(const int device_id) {
 	cudaDeviceGetPCIBusId(busid, busid_size, device_id);
 	std::string busid_str = [](std::string str) -> std::string {
 		std::transform(str.begin(), str.end(), str.begin(),
-				[](unsigned c) {return std::tolower(c);});
+				[](const unsigned c) {return std::tolower(c);});
 		return str;
 	}(busid);
 	const std::string path = "/sys/class/pci_bus/" + busid_str.substr(0, busid_reduced_size - 1) + "/../../" + busid_str;
