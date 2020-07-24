@@ -1,7 +1,33 @@
+#include <algorithm>
+#include <string>
+#include <exception>
+#include <sched.h>
 #include <aonfp/aonfp.hpp>
 #include <aonfp/cuda_copy.hpp>
 
 namespace {
+
+std::string get_cuda_path(const int device_id) {
+	constexpr std::size_t busid_size = sizeof("0000:00:00.0");
+	constexpr std::size_t busid_reduced_size = sizeof("0000:00");
+
+	char busid[busid_size];
+	cudaDeviceGetPCIBusId(busid, busid_size, device_id);
+	std::string busid_str = [](std::string str) -> std::string {
+		std::transform(str.begin(), str.end(), str.begin(),
+				[](unsigned c) {return std::tolower(c);});
+		return str;
+	}(busid);
+	const std::string path = "/sys/class/pci_bus/" + busid_str.substr(0, busid_reduced_size) + "/../../" + busid_str;
+
+	const auto real_path = realpath(path.c_str(), nullptr);
+	if (real_path == nullptr) {
+		throw std::runtime_error("Could not find real path of " + path);
+	}
+
+	return std::string{real_path};
+}
+
 template <class T, class S_EXP_T, class MANTISSA_T>
 __global__ void copy_to_device_kernel(T *const dst_ptr, const S_EXP_T *const s_exp_ptr, const MANTISSA_T *const mantissa_ptr, const std::size_t N) {
 	const auto tid = blockIdx.x * blockDim.x + threadIdx.x;
