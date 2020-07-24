@@ -1,6 +1,8 @@
 #include <algorithm>
-#include <string>
 #include <exception>
+#include <iomanip>
+#include <sstream>
+#include <string>
 #include <sched.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -61,6 +63,25 @@ cpu_set_t str_to_cpuset(const std::string str) {
 	}
 
 	return mask;
+}
+
+std::string cpuset_to_str(const cpu_set_t cpuset) {
+	unsigned c = 0;
+	auto m8 = reinterpret_cast<const uint8_t*>(&cpuset);
+
+	std::stringstream ss;
+
+	for (int o = sizeof(cpu_set_t); o >= 0; o--) {
+		if (c == 0 && m8[o] == 0)
+			continue;
+		ss << std::setfill('0') << std::setw(2) << std::hex << m8[o];
+		c += 2;
+		if (o && o % 4 == 0) {
+			ss << ",";
+			c++;
+		}
+	}
+	return ss.str();
 }
 
 cpu_set_t get_cpu_gpu_affinity(const int device_id) {
