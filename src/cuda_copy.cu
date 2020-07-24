@@ -24,7 +24,7 @@ std::string get_cuda_path(const int device_id) {
 				[](unsigned c) {return std::tolower(c);});
 		return str;
 	}(busid);
-	const std::string path = "/sys/class/pci_bus/" + busid_str.substr(0, busid_reduced_size) + "/../../" + busid_str;
+	const std::string path = "/sys/class/pci_bus/" + busid_str.substr(0, busid_reduced_size - 1) + "/../../" + busid_str;
 
 	const auto real_path = realpath(path.c_str(), nullptr);
 	if (real_path == nullptr) {
