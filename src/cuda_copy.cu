@@ -53,6 +53,21 @@ cpu_set_t get_cpu_gpu_affinity(const int device_id) {
 	return mask;
 }
 
+void set_cpu_affinity(const int device_id) {
+	cpu_set_t mask;
+	sched_getaffinity(0, sizeof(cpu_set_t), &mask);
+
+	const auto gpu_mask = get_cpu_gpu_affinity(device_id);
+
+	cpu_set_t final_mask;
+	CPU_AND(&final_mask, &mask, &gpu_mask);
+
+	if (CPU_COUNT(&final_mask)) {
+		const auto affinity_str = cpuset_to_str(final_mask);
+		sched_setaffinity(0, sizeof(cpu_set_t), &final_mask);
+	}
+}
+
 template <class T, class S_EXP_T, class MANTISSA_T>
 __global__ void copy_to_device_kernel(T *const dst_ptr, const S_EXP_T *const s_exp_ptr, const MANTISSA_T *const mantissa_ptr, const std::size_t N) {
 	const auto tid = blockIdx.x * blockDim.x + threadIdx.x;
