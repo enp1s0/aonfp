@@ -2,6 +2,10 @@
 #include <string>
 #include <exception>
 #include <sched.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <aonfp/aonfp.hpp>
 #include <aonfp/cuda_copy.hpp>
 
@@ -26,6 +30,27 @@ std::string get_cuda_path(const int device_id) {
 	}
 
 	return std::string{real_path};
+}
+
+cpu_set_t get_cpu_gpu_affinity(const int device_id) {
+	cpu_set_t mask;
+	memset(&mask, 0, sizeof(cpu_set_t));
+
+	const auto cuda_path = get_cuda_path(device_id);
+	const auto path = cuda_path + "/local_cpus";
+
+	int fd = open(path.c_str(), O_RDONLY);
+	if (fd < 0) {
+		throw std::runtime_error("Could not open " + path);
+	}
+
+	char affinity_str[sizeof(cpu_set_t) * 2];
+	const auto s = read(fd, affinity_str, sizeof(cpu_set_t) * 2);
+	if (s > 0) {
+		mask = str_to_cpuset(affinity_str);
+	}
+	close(fd);
+	return mask;
 }
 
 template <class T, class S_EXP_T, class MANTISSA_T>
