@@ -98,6 +98,11 @@ __global__ void copy_to_host_kernel(S_EXP_T *const s_exp_ptr, MANTISSA_T *const 
 
 template <class T, class S_EXP_T, class MANTISSA_T>
 int aonfp::cuda::copy_to_device(T *const dst_ptr, const S_EXP_T *const s_exp_ptr, const MANTISSA_T *const mantissa_ptr, const std::size_t N, cudaStream_t stream) {
+	// Set CPU affinity for good performance
+	int device_id;
+	cudaGetDevice(&device_id);
+	set_cpu_affinity(device_id);
+
 	constexpr std::size_t block_size = 1024;
 	copy_to_device_kernel<T, S_EXP_T, MANTISSA_T><<<(N + block_size - 1) / block_size, block_size, 0, stream>>>(dst_ptr, s_exp_ptr, mantissa_ptr, N);
 	if (cudaGetLastError() == cudaSuccess) {
@@ -109,6 +114,11 @@ int aonfp::cuda::copy_to_device(T *const dst_ptr, const S_EXP_T *const s_exp_ptr
 
 template <class S_EXP_T, class MANTISSA_T, class T>
 int aonfp::cuda::copy_to_host(S_EXP_T *const s_exp_ptr, MANTISSA_T *const mantissa_ptr, const T *const src_ptr, const std::size_t N, cudaStream_t stream) {
+	// Set CPU affinity for good performance
+	int device_id;
+	cudaGetDevice(&device_id);
+	set_cpu_affinity(device_id);
+
 	constexpr std::size_t block_size = 1024;
 	copy_to_host_kernel<S_EXP_T, MANTISSA_T, T><<<(N + block_size - 1) / block_size, block_size, 0, stream>>>(s_exp_ptr, mantissa_ptr, src_ptr, N);
 	if (cudaGetLastError() == cudaSuccess) {
