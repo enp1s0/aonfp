@@ -32,6 +32,37 @@ std::string get_cuda_path(const int device_id) {
 	return std::string{real_path};
 }
 
+cpu_set_t str_to_cpuset(const std::string str) {
+	constexpr std::size_t cpuset_n_uint32 = sizeof(cpu_set_t) / sizeof(uint32_t);
+	uint32_t cpumask[cpuset_n_uint32];
+	int m = cpuset_n_uint32 - 1;
+	cpumask[m] = 0u;
+	for (unsigned o = 0; o < str.length(); o++) {
+		const char c = str.c_str()[o];
+		if (c == ',') {
+			m--;
+			cpumask[m] = 0u;
+		} else {
+			const auto v = [](const char c) -> int32_t {
+				const int v = c - '0';
+				if (0 <= c && c <= 9) return v;
+				if (9 < c) return 10 + v - 'a';
+				return -1;
+			}(c);
+			if (v == -1) break;
+			cpumask[m] <<= 4;
+			cpumask[m] += v;
+		}
+	}
+
+	cpu_set_t mask;
+	for (unsigned a = 0; m < cpuset_n_uint32; a++, m++) {
+		memcpy(reinterpret_cast<uint32_t*>(&mask) + a, cpumask + m, sizeof(cpu_set_t));
+	}
+
+	return mask;
+}
+
 cpu_set_t get_cpu_gpu_affinity(const int device_id) {
 	cpu_set_t mask;
 	memset(&mask, 0, sizeof(cpu_set_t));
