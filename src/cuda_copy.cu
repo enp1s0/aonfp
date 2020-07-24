@@ -35,9 +35,9 @@ std::string get_cuda_path(const int device_id) {
 }
 
 cpu_set_t str_to_cpuset(const std::string str) {
-	constexpr std::size_t cpuset_n_uint32 = sizeof(cpu_set_t) / sizeof(uint32_t);
+	constexpr unsigned cpuset_n_uint32 = sizeof(cpu_set_t) / sizeof(uint32_t);
 	uint32_t cpumask[cpuset_n_uint32];
-	int m = cpuset_n_uint32 - 1;
+	auto m = cpuset_n_uint32 - 1;
 	cpumask[m] = 0u;
 	for (unsigned o = 0; o < str.length(); o++) {
 		const char c = str.c_str()[o];
