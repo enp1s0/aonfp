@@ -50,6 +50,28 @@ uint64_t __mul64hi(const uint64_t a, const uint64_t b) {
 	return hi;
 }
 #endif
+
+template <>
+AONFP_HOST_DEVICE typename mul_compute_t<uint64_t>::type mul_mantissa(const uint64_t mantissa_a, const uint64_t mantissa_b, uint32_t &shifted) {
+	const auto w_mantissa_a = (1lu << (sizeof(uint64_t) * 8 - 1)) | (mantissa_a >> 1);
+	const auto w_mantissa_b = (1lu << (sizeof(uint64_t) * 8 - 2)) | (mantissa_a >> 2);
+
+	mul_compute_t<uint64_t>::type ab;
+	ab.x[0] = w_mantissa_a * w_mantissa_b;
+	ab.x[1] = __mul64hi(w_mantissa_a, w_mantissa_b);
+
+	const auto mlb2 = static_cast<uint32_t>(ab.x[1] >> (sizeof(uint64_t) * 8 - 2));
+	const auto a0 = mlb2 & 0b01;
+	const auto a1 = mlb2 & 0b10;
+	const auto b0 = ((a1 >> 1) < a0) ? 0 : 1;
+	const auto b1 = ~a1;
+	shifted = b0 | (b1 << 1);
+
+	ab.x[1] = (ab.x[1] << shifted) | (ab.x[0] >> (sizeof(uint64_t) * 8 - shifted));
+	ab.x[0] = ab.x[0] << shifted;
+
+	return ab;
+}
 } // namespace detail
 } // namespace aonfp
 #endif
