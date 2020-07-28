@@ -16,7 +16,7 @@ template <> struct mul_compute_t<uint16_t> {using type = uint32_t;};
 template <> struct mul_compute_t<uint8_t > {using type = uint16_t;};
 
 template <class T>
-AONFP_HOST_DEVICE typename mul_compute_t<T>::type mul_mantissa(const T mantissa_a, const T mantissa_b, uint32_t &shifted) {
+AONFP_HOST_DEVICE inline typename mul_compute_t<T>::type mul_mantissa(const T mantissa_a, const T mantissa_b, uint32_t &shifted) {
 	using c_t = typename mul_compute_t<T>::type;
 	const auto w_mantissa_a = (static_cast<c_t>(1) << (sizeof(T) * 8 - 1)) | (static_cast<c_t>(mantissa_a) >> 1);
 	const auto w_mantissa_b = (static_cast<c_t>(1) << (sizeof(T) * 8 - 2)) | (static_cast<c_t>(mantissa_b) >> 2);
@@ -32,7 +32,7 @@ AONFP_HOST_DEVICE typename mul_compute_t<T>::type mul_mantissa(const T mantissa_
 }
 
 #ifndef __CUDA_ARCH__
-uint64_t __mul64hi(const uint64_t a, const uint64_t b) {
+inline uint64_t __mul64hi(const uint64_t a, const uint64_t b) {
 	const auto a_lo = static_cast<uint64_t>(static_cast<uint32_t>(a));
 	const auto a_hi = a >> 32;
 	const auto b_lo = static_cast<uint64_t>(static_cast<uint32_t>(b));
@@ -52,7 +52,7 @@ uint64_t __mul64hi(const uint64_t a, const uint64_t b) {
 #endif
 
 template <>
-AONFP_HOST_DEVICE typename mul_compute_t<uint64_t>::type mul_mantissa(const uint64_t mantissa_a, const uint64_t mantissa_b, uint32_t &shifted) {
+AONFP_HOST_DEVICE inline typename mul_compute_t<uint64_t>::type mul_mantissa(const uint64_t mantissa_a, const uint64_t mantissa_b, uint32_t &shifted) {
 	const auto w_mantissa_a = (1lu << (sizeof(uint64_t) * 8 - 1)) | (mantissa_a >> 1);
 	const auto w_mantissa_b = (1lu << (sizeof(uint64_t) * 8 - 2)) | (mantissa_a >> 2);
 
