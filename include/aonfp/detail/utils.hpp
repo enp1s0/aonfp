@@ -12,6 +12,16 @@ template <> void print_hex<uint16_t>(const uint16_t v, const bool line_break) {p
 template <> void print_hex<uint8_t >(const uint8_t  v, const bool line_break) {printf("0x%02x", v);if(line_break)printf("\n");}
 
 template <class T>
+inline void print_bin(const T v, const bool line_break = false) {
+	for (int i = sizeof(T) * 8 - 1; i >= 0; i--) {
+		std::printf("%d", (v >> i) & 0x1);
+	}
+	if (line_break) {
+		std::printf("\n");
+	}
+}
+
+template <class T>
 const char* get_type_name_string();
 template <> const char* get_type_name_string<float   >() {return "float";}
 template <> const char* get_type_name_string<double  >() {return "double";}
