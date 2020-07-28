@@ -102,7 +102,11 @@ AONFP_HOST_DEVICE inline void mul(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_ma
 	uint32_t shifted_1;
 	dst_mantissa = resize_mantissa<DST_MANTISSA_T>(full_mantissa, shifted_1);
 
-	const auto exp = detail::get_exponent_bitstring(src_s_exp_a) - static_cast<long>(detail::get_default_exponent_bias(sizeof(SRC_S_EXP_T) * 8 - 1) * 2) + detail::get_exponent_bitstring(src_s_exp_b) - shifted_0 + shifted_1;
+	const auto exp_a = detail::get_exponent_bitstring(src_s_exp_a) - static_cast<long>(detail::get_default_exponent_bias(sizeof(SRC_S_EXP_T) * 8 - 1));
+	const auto exp_b = detail::get_exponent_bitstring(src_s_exp_b) - static_cast<long>(detail::get_default_exponent_bias(sizeof(SRC_S_EXP_T) * 8 - 1));
+
+	const auto exp = exp_a + exp_b - (shifted_0 - 3) + shifted_1;
+
 	const auto s = (detail::get_sign_bitstring(src_s_exp_a) ^ detail::get_sign_bitstring(src_s_exp_b)) >> (sizeof(SRC_S_EXP_T) * 8 - 1);
 
 	dst_s_exp = static_cast<DST_S_EXP_T>(exp + detail::get_default_exponent_bias(sizeof(DST_S_EXP_T) * 8 - 1)) | (static_cast<DST_S_EXP_T>(s) << (sizeof(DST_S_EXP_T) * 8 - 1));
