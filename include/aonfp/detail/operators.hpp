@@ -1,5 +1,6 @@
 #ifndef __AONFP_DETAIL_OPERATORS_HPP__
 #define __AONFP_DETAIL_OPERATORS_HPP__
+#include <type_traits>
 #include "../aonfp.hpp"
 #include "detail.hpp"
 #include "compose.hpp"
@@ -72,6 +73,24 @@ AONFP_HOST_DEVICE inline typename mul_compute_t<uint64_t>::type mul_mantissa(con
 
 	return ab;
 }
+
+template <class DST_T, class SRC_T>
+AONFP_HOST_DEVICE DST_T resize_mantissa(const SRC_T src_mantissa, uint32_t &shifted) {
+	using c_t = typename std::conditional<sizeof(SRC_T) >= sizeof(DST_T), SRC_T, DST_T>::type;
+	const auto c_src_mantissa = static_cast<c_t>(src_mantissa);
+
+	if (sizeof(DST_T) >= sizeof(SRC_T)) {
+		shifted = 0;
+		return c_src_mantissa << ((sizeof(DST_T) - sizeof(SRC_T)) * 8);
+	} else {
+		const auto c = ((c_src_mantissa & (static_cast<c_t>(1) << ((sizeof(SRC_T) - sizeof(DST_T)) * 8 - 1))) >> (sizeof(SRC_T) - sizeof(DST_T) - 1) & 0x1);
+		const auto m0 = c_src_mantissa >> (sizeof(SRC_T) - sizeof(DST_T));
+		const auto m1 = m0 + c;
+		shifted = static_cast<uint32_t>(m1 >> (sizeof(SRC_T) - sizeof(DST_T)));
+		return static_cast<DST_T>(m1 >> shifted);
+	}
+}
+
 } // namespace detail
 } // namespace aonfp
 #endif
