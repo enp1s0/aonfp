@@ -1,7 +1,6 @@
 #ifndef __AONFP_DETAIL_OPERATORS_HPP__
 #define __AONFP_DETAIL_OPERATORS_HPP__
 #include <type_traits>
-#include "../aonfp.hpp"
 #include "detail.hpp"
 #include "compose.hpp"
 namespace aonfp {
