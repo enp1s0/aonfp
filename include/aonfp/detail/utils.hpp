@@ -14,7 +14,7 @@ template <> void print_hex<uint8_t >(const uint8_t  v, const bool line_break) {p
 template <class T>
 inline void print_bin(const T v, const bool line_break = false) {
 	for (int i = sizeof(T) * 8 - 1; i >= 0; i--) {
-		std::printf("%d", (v >> i) & 0x1);
+		std::printf("%d", static_cast<int>(v >> i) & 0x1);
 	}
 	if (line_break) {
 		std::printf("\n");
