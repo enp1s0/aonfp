@@ -25,8 +25,8 @@ AONFP_HOST_DEVICE inline typename mul_compute_t<T>::type mul_mantissa(const T ma
 	const auto a0 = mlb2 & 0b01;
 	const auto a1 = mlb2 & 0b10;
 	const auto b0 = ((a1 >> 1) < a0) ? 0 : 1;
-	const auto b1 = ~a1;
-	shifted = b0 | (b1 << 1);
+	const auto b1 = (~(a1)) & 0b10;
+	shifted = b0 | b1;
 
 	return w_mantissa_ab << shifted;
 }
@@ -64,8 +64,8 @@ AONFP_HOST_DEVICE inline typename mul_compute_t<uint64_t>::type mul_mantissa(con
 	const auto a0 = mlb2 & 0b01;
 	const auto a1 = mlb2 & 0b10;
 	const auto b0 = ((a1 >> 1) < a0) ? 0 : 1;
-	const auto b1 = ~a1;
-	shifted = b0 | (b1 << 1);
+	const auto b1 = (~(a1)) & 0b10;
+	shifted = b0 | b1;
 
 	ab.x[1] = (ab.x[1] << shifted) | (ab.x[0] >> (sizeof(uint64_t) * 8 - shifted));
 
