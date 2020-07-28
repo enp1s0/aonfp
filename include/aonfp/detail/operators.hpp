@@ -11,7 +11,7 @@ struct aonfp_uint128_t {
 };
 template <class RESULT_T>
 struct mul_compute_t {using type = RESULT_T;};
-template <> struct mul_compute_t<uint64_t> {using type = aonfp_uint128_t;};
+template <> struct mul_compute_t<uint64_t> {using type = uint64_t;};
 template <> struct mul_compute_t<uint32_t> {using type = uint64_t;};
 template <> struct mul_compute_t<uint16_t> {using type = uint32_t;};
 template <> struct mul_compute_t<uint8_t > {using type = uint16_t;};
@@ -57,7 +57,7 @@ AONFP_HOST_DEVICE inline typename mul_compute_t<uint64_t>::type mul_mantissa(con
 	const auto w_mantissa_a = (1lu << (sizeof(uint64_t) * 8 - 1)) | (mantissa_a >> 1);
 	const auto w_mantissa_b = (1lu << (sizeof(uint64_t) * 8 - 2)) | (mantissa_a >> 2);
 
-	mul_compute_t<uint64_t>::type ab;
+	aonfp_uint128_t ab;
 	ab.x[0] = w_mantissa_a * w_mantissa_b;
 	ab.x[1] = __mul64hi(w_mantissa_a, w_mantissa_b);
 
@@ -69,9 +69,8 @@ AONFP_HOST_DEVICE inline typename mul_compute_t<uint64_t>::type mul_mantissa(con
 	shifted = b0 | (b1 << 1);
 
 	ab.x[1] = (ab.x[1] << shifted) | (ab.x[0] >> (sizeof(uint64_t) * 8 - shifted));
-	ab.x[0] = ab.x[0] << shifted;
 
-	return ab;
+	return ab.x[1];
 }
 
 template <class DST_T, class SRC_T>
