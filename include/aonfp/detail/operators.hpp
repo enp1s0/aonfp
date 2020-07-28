@@ -31,6 +31,25 @@ AONFP_HOST_DEVICE typename mul_compute_t<T>::type mul_mantissa(const T mantissa_
 	return w_mantissa_ab << shifted;
 }
 
+#ifndef __CUDA_ARCH__
+uint64_t __mul64hi(const uint64_t a, const uint64_t b) {
+	const auto a_lo = static_cast<uint64_t>(static_cast<uint32_t>(a));
+	const auto a_hi = a >> 32;
+	const auto b_lo = static_cast<uint64_t>(static_cast<uint32_t>(b));
+	const auto b_hi = b >> 32;
+
+	const auto ab_hi = a_hi * b_hi;
+	const auto ab_mid = a_hi * b_lo;
+	const auto ba_mid = b_hi * a_lo;
+	const auto ab_lo = a_lo * b_lo;
+
+	const auto carry_bit = (static_cast<uint64_t>(static_cast<uint32_t>(ab_mid)) + static_cast<uint64_t>(static_cast<uint32_t>(ba_mid)) + (ab_lo >> 32)) >> 32;
+
+	const auto hi = ab_hi + (ab_mid >> 32) + (ba_mid >> 32) + carry_bit;
+
+	return hi;
+}
+#endif
 } // namespace detail
 } // namespace aonfp
 #endif
