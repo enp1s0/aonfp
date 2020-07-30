@@ -11,7 +11,7 @@
 #include "detail/detail.hpp"
 #include "detail/compose.hpp"
 #include "detail/standard_fp.hpp"
-#include "detail/operators.hpp"
+#include "detail/mul.hpp"
 
 namespace aonfp {
 template <class T, class S_EXP_T, class MANTISSA_T>
