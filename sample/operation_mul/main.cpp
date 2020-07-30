@@ -37,10 +37,10 @@ void test_mul() {
 		const auto threshold = threshold_base * std::abs(correct_ans);
 
 		if (error > threshold) {
-			std::printf("SE_A : ");aonfp::detail::utils::print_hex(s_exp_a, true);
-			std::printf("M_A  : ");aonfp::detail::utils::print_hex(mantissa_a, true);
-			std::printf("SE_B : ");aonfp::detail::utils::print_hex(s_exp_b, true);
-			std::printf("M_B  : ");aonfp::detail::utils::print_hex(mantissa_b, true);
+			std::printf("SE_A : 0b");aonfp::detail::utils::print_bin(s_exp_a, true);
+			std::printf("M_A  : 0b");aonfp::detail::utils::print_bin(mantissa_a, true);
+			std::printf("SE_B : 0b");aonfp::detail::utils::print_bin(s_exp_b, true);
+			std::printf("M_B  : 0b");aonfp::detail::utils::print_bin(mantissa_b, true);
 			std::printf("{ab = %e, cor = %e} error = %e > [threshold:%e]\n", test_value_ab, correct_ans, error, threshold);
 		} else {
 			passed++;
