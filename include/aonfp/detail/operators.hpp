@@ -107,9 +107,19 @@ AONFP_HOST_DEVICE inline void mul(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_ma
 
 	const auto exp = exp_a + exp_b - shifted_0 + 3 + shifted_1;
 
-	const auto s = (detail::get_sign_bitstring(src_s_exp_a) ^ detail::get_sign_bitstring(src_s_exp_b)) >> (sizeof(SRC_S_EXP_T) * 8 - 1);
+	const auto exponent = static_cast<typename std::make_signed<DST_S_EXP_T>::type>(exp + detail::get_default_exponent_bias(sizeof(DST_S_EXP_T) * 8 - 1));
 
-	dst_s_exp = static_cast<DST_S_EXP_T>(exp + detail::get_default_exponent_bias(sizeof(DST_S_EXP_T) * 8 - 1)) | (static_cast<DST_S_EXP_T>(s) << (sizeof(DST_S_EXP_T) * 8 - 1));
+	if (exponent < 0) {
+		dst_mantissa = aonfp::detail::get_zero_mantissa_bitstring<DST_MANTISSA_T>();
+		dst_s_exp = aonfp::detail::get_zero_sign_exponent_bitstring<DST_S_EXP_T>(0);
+		return;
+	} else if (static_cast<DST_S_EXP_T>(exponent) > static_cast<DST_S_EXP_T>(aonfp::detail::get_max_exponent(sizeof(DST_S_EXP_T) * 8 - 1) << 1)) {
+		dst_mantissa = aonfp::detail::get_inf_mantissa_bitstring<DST_MANTISSA_T>();
+		dst_s_exp = aonfp::detail::get_inf_sign_exponent_bitstring<DST_S_EXP_T>(0);
+		return;
+	}
+	const auto s = (detail::get_sign_bitstring(src_s_exp_a) ^ detail::get_sign_bitstring(src_s_exp_b)) >> (sizeof(SRC_S_EXP_T) * 8 - 1);
+	dst_s_exp = exponent | (static_cast<DST_S_EXP_T>(s) << (sizeof(DST_S_EXP_T) * 8 - 1));
 }
 } // namespace detail
 } // namespace aonfp
