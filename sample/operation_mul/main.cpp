@@ -5,13 +5,13 @@
 #include <cmath>
 #include <limits>
 
-constexpr std::size_t C = 1lu << 10;
+constexpr std::size_t C = 1lu << 15;
 
 template <class DST_S_EXP_T, class DST_MANTISSA_T, class SRC_S_EXP_T, class SRC_MANTISSA_T>
 void test_mul() {
 	std::mt19937 mt(std::random_device{}());
 
-	std::uniform_real_distribution<double> dist(-10000, 10000);
+	std::uniform_real_distribution<double> dist(-10, 10);
 
 	const auto threshold_base = 16 * std::pow(10.0f, -std::log10(2.0) * std::min<unsigned>(sizeof(DST_MANTISSA_T) * 8, aonfp::detail::standard_fp::get_mantissa_size<double>()));
 
