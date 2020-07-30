@@ -54,7 +54,7 @@ inline uint64_t __mul64hi(const uint64_t a, const uint64_t b) {
 template <>
 AONFP_HOST_DEVICE inline typename mul_compute_t<uint64_t>::type mul_mantissa(const uint64_t mantissa_a, const uint64_t mantissa_b, uint32_t &shifted) {
 	const auto w_mantissa_a = (1lu << (sizeof(uint64_t) * 8 - 1)) | (mantissa_a >> 1);
-	const auto w_mantissa_b = (1lu << (sizeof(uint64_t) * 8 - 2)) | (mantissa_a >> 2);
+	const auto w_mantissa_b = (1lu << (sizeof(uint64_t) * 8 - 2)) | (mantissa_b >> 2);
 
 	aonfp_uint128_t ab;
 	ab.x[0] = w_mantissa_a * w_mantissa_b;
