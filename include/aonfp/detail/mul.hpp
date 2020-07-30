@@ -1,5 +1,5 @@
-#ifndef __AONFP_DETAIL_OPERATORS_HPP__
-#define __AONFP_DETAIL_OPERATORS_HPP__
+#ifndef __AONFP_DETAIL_MUL_HPP__
+#define __AONFP_DETAIL_MUL_HPP__
 #include <type_traits>
 #include "detail.hpp"
 #include "compose.hpp"
