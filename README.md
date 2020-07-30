@@ -23,6 +23,12 @@ Data types for `sign_exponent` and `mantissa` are
 - `uint16`
 - `uint8`
 
+
+## Supported operations
+- [x] `mul`
+- [ ] `add` / `sub`
+- [ ] approx `rsqrt`
+
 respectively.
 
 ### Sample code
