@@ -22,6 +22,10 @@ enum uo_flow_t {
 	uo_flow_underflow,
 };
 
+struct aonfp_uint128_t {
+	uint64_t x[2];
+};
+
 template <class T>
 struct bitstring_t {using type = T;};
 template <> struct bitstring_t<float > {using type = uint32_t;};
