@@ -7,7 +7,7 @@ namespace aonfp {
 namespace detail {
 
 template <class DST_S_EXP_T, class DST_MANTISSA_T, class SRC_S_EXP_T, class SRC_MANTISSA_T>
-AONFP_HOST_DEVICE inline void add_abs(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_mantissa,
+AONFP_HOST_DEVICE inline void add(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_mantissa,
 		const SRC_S_EXP_T src_s_exp_a, const SRC_MANTISSA_T src_mantissa_a,
 		const SRC_S_EXP_T src_s_exp_b, const SRC_MANTISSA_T src_mantissa_b) {
 	const auto exp_a = detail::get_exponent_bitstring(src_s_exp_a);
