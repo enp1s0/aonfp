@@ -5,12 +5,6 @@
 
 namespace aonfp {
 namespace detail {
-template <class RESULT_T>
-struct add_compute_t {using type = RESULT_T;};
-template <> struct add_compute_t<uint64_t> {using type = uint64_t;};
-template <> struct add_compute_t<uint32_t> {using type = uint64_t;};
-template <> struct add_compute_t<uint16_t> {using type = uint32_t;};
-template <> struct add_compute_t<uint8_t > {using type = uint16_t;};
 
 template <class DST_S_EXP_T, class DST_MANTISSA_T, class SRC_S_EXP_T, class SRC_MANTISSA_T>
 AONFP_HOST_DEVICE inline void add_abs(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_mantissa,
