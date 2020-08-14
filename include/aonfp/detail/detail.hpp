@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <type_traits>
 #include "standard_fp.hpp"
+#include "aonfp_uint128_t.hpp"
 
 namespace aonfp {
 namespace detail {
@@ -20,15 +21,6 @@ enum uo_flow_t {
 	uo_flow_non,
 	uo_flow_overflow,
 	uo_flow_underflow,
-};
-
-struct aonfp_uint128_t {
-	uint64_t x[2];
-	aonfp_uint128_t operator=(const uint64_t v) {
-		x[0] = v;
-		x[1] = 0;
-		return *this;
-	}
 };
 
 template <class T>
