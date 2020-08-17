@@ -36,11 +36,20 @@ void test_add() {
 		const auto error = std::abs(correct_ans - test_value_ab);
 		const auto threshold = threshold_base * std::abs(correct_ans);
 
+		DST_MANTISSA_T correct_mantissa;
+		DST_S_EXP_T correct_s_exp;
+		aonfp::decompose(correct_s_exp, correct_mantissa, correct_ans);
+
 		if (error > threshold) {
+			std::printf("a    : %e\n", test_value_a);
+			std::printf("b    : %e\n", test_value_b);
 			std::printf("SE_A : 0b");aonfp::detail::utils::print_bin(s_exp_a, true);
 			std::printf("M_A  : 0b");aonfp::detail::utils::print_bin(mantissa_a, true);
 			std::printf("SE_B : 0b");aonfp::detail::utils::print_bin(s_exp_b, true);
 			std::printf("M_B  : 0b");aonfp::detail::utils::print_bin(mantissa_b, true);
+			std::printf("SE_AB: 0b");aonfp::detail::utils::print_bin(s_exp_ab, true);
+			std::printf("M_AB : 0b");aonfp::detail::utils::print_bin(mantissa_ab, true);
+			std::printf("M_C  : 0b");aonfp::detail::utils::print_bin(correct_mantissa, true);
 			std::printf("{ab = %e, cor = %e} error = %e > [threshold:%e]\n", test_value_ab, correct_ans, error, threshold);
 		} else {
 			passed++;
