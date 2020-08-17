@@ -30,29 +30,39 @@ AONFP_HOST_DEVICE inline void add(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_ma
 		adding_mantissa = src_mantissa_a;
 	}
 
-	base_mantissa = (base_mantissa >> (base_shift - 2)) | (static_cast<compute_mantissa_t>(1) << (sizeof(compute_mantissa_t) * 8 - 2));
-	adding_mantissa = (adding_mantissa >> (base_shift - 2)) | (static_cast<compute_mantissa_t>(1) << (sizeof(compute_mantissa_t) * 8 - 2));
+	adding_mantissa = (adding_mantissa >> 1) | (static_cast<compute_mantissa_t>(1) << (sizeof(compute_mantissa_t) * 8 - 1));
+	base_mantissa = (base_mantissa >> 1) | (static_cast<compute_mantissa_t>(1) << (sizeof(compute_mantissa_t) * 8 - 1));
 
+	// For getting carry
+	adding_mantissa >>= 1;
+	base_mantissa >>= 1;
+
+	std::printf("shift = %d\n", shift);
 	adding_mantissa >>= shift;
 
-	const auto tmp_dst_mantissa = base_mantissa + adding_mantissa;
+	const auto sign_a = detail::get_sign_bitstring(src_s_exp_a);
+	const auto sign_b = detail::get_sign_bitstring(src_s_exp_b);
 
-	const auto mlb2 = static_cast<uint32_t>(tmp_dst_mantissa >> (sizeof(compute_mantissa_t) * 8 - 2));
-	const auto a0 = mlb2 & 0b01;
-	const auto a1 = mlb2 & 0b10;
-	const auto b0 = ((a1 >> 1) < a0) ? 0 : 1;
-	const auto b1 = (~(a1)) & 0b10;
-	const auto shifted = b0 | b1;
+	compute_mantissa_t tmp_dst_mantissa;
 
-	dst_mantissa = tmp_dst_mantissa << shifted;
+	aonfp::detail::utils::print_bin(base_mantissa, true);
+	aonfp::detail::utils::print_bin(adding_mantissa, true);
 
-	const auto exp_c = base_exp - shifted + 2 + detail::get_default_exponent_bias(sizeof(DST_S_EXP_T) * 8 - 1);
-	if (static_cast<DST_S_EXP_T>(exp_c) > static_cast<DST_S_EXP_T>(aonfp::detail::get_max_exponent(sizeof(DST_S_EXP_T) * 8 - 1) << 1)) {
-		dst_mantissa = aonfp::detail::get_inf_mantissa_bitstring<DST_MANTISSA_T>();
-		dst_s_exp = aonfp::detail::get_inf_sign_exponent_bitstring<DST_S_EXP_T>(0);
-		return;
+	if ((sign_a ^ sign_b) != 0) {
+		tmp_dst_mantissa = base_mantissa - adding_mantissa;
+	} else {
+		tmp_dst_mantissa = base_mantissa + adding_mantissa;
 	}
-	dst_s_exp = exp_c;
+
+	const auto carry = tmp_dst_mantissa >> (sizeof(compute_mantissa_t) * 8 - 1);
+
+	dst_mantissa = tmp_dst_mantissa << (2 - carry);
+
+	// exponential
+	if ((sign_a ^ sign_b) != 0) {
+	} else {
+	
+	}
 }
 } // namespace detail
 } // namespace aonfp
