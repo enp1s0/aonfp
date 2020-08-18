@@ -14,7 +14,6 @@ AONFP_HOST_DEVICE inline void add(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_ma
 	const auto exp_b = detail::get_exponent_bitstring(src_s_exp_b);
 
 	using compute_mantissa_t = typename std::conditional<sizeof(DST_MANTISSA_T) >= sizeof(SRC_MANTISSA_T), DST_MANTISSA_T, SRC_MANTISSA_T>::type;
-	constexpr auto base_shift = 2 * sizeof(compute_mantissa_t) - sizeof(DST_MANTISSA_T) - sizeof(SRC_MANTISSA_T);
 
 	const auto base_exp = exp_a > exp_b ? exp_a : exp_b;
 	const int shift = 2 * base_exp - exp_a - exp_b;
