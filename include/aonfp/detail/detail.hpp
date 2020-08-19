@@ -64,6 +64,45 @@ AONFP_HOST_DEVICE constexpr long get_max_exponent(const unsigned expopent_length
 
 AONFP_HOST_DEVICE constexpr long get_min_exponent(const unsigned exponent_length) {return 1 - static_cast<long>(get_default_exponent_bias(exponent_length));}
 
+// bit operations
+template <class T>
+AONFP_HOST_DEVICE unsigned num_of_bits(T bits);
+template <>
+AONFP_HOST_DEVICE unsigned num_of_bits<uint64_t>(uint64_t bits) {
+	bits = (bits & 0x5555555555555555lu) + (bits >> 1  & 0x5555555555555555lu);
+	bits = (bits & 0x3333333333333333lu) + (bits >> 2  & 0x3333333333333333lu);
+	bits = (bits & 0x0f0f0f0f0f0f0f0flu) + (bits >> 4  & 0x0f0f0f0f0f0f0f0flu);
+	bits = (bits & 0x00ff00ff00ff00fflu) + (bits >> 8  & 0x00ff00ff00ff00fflu);
+	bits = (bits & 0x0000ffff0000fffflu) + (bits >> 16 & 0x0000ffff0000fffflu);
+	bits = (bits & 0x00000000fffffffflu) + (bits >> 32 & 0x00000000fffffffflu);
+	return bits;
+}
+template <>
+AONFP_HOST_DEVICE unsigned num_of_bits<uint32_t>(uint32_t bits) {
+	bits = (bits & 0x55555555u) + (bits >> 1  & 0x55555555u);
+	bits = (bits & 0x33333333u) + (bits >> 2  & 0x33333333u);
+	bits = (bits & 0x0f0f0f0fu) + (bits >> 4  & 0x0f0f0f0fu);
+	bits = (bits & 0x00ff00ffu) + (bits >> 8  & 0x00ff00ffu);
+	bits = (bits & 0x0000ffffu) + (bits >> 16 & 0x0000ffffu);
+	return bits;
+}
+template <>
+AONFP_HOST_DEVICE unsigned num_of_bits<uint16_t>(uint16_t bits) {
+	bits = (bits & 0x5555u) + (bits >> 1 & 0x5555u);
+	bits = (bits & 0x3333u) + (bits >> 2 & 0x3333u);
+	bits = (bits & 0x0f0fu) + (bits >> 4 & 0x0f0fu);
+	bits = (bits & 0x00ffu) + (bits >> 8 & 0x00ffu);
+	return bits;
+}
+template <>
+AONFP_HOST_DEVICE unsigned num_of_bits<uint8_t >(uint8_t  bits) {
+	bits = (bits & 0x55u) + (bits >> 1 & 0x55u);
+	bits = (bits & 0x33u) + (bits >> 2 & 0x33u);
+	bits = (bits & 0x0fu) + (bits >> 4 & 0x0fu);
+	return bits;
+}
+
+
 } //namespace detail
 } //namespace aonfp
 #endif
