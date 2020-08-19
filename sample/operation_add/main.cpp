@@ -13,7 +13,7 @@ void test_add() {
 
 	std::uniform_real_distribution<double> dist(-1, 1);
 
-	const auto threshold_base = std::pow(10.0, 5.0 - std::log10(2.0) * std::min<unsigned>(sizeof(DST_MANTISSA_T), sizeof(SRC_MANTISSA_T)) * 8);
+	const auto threshold_base = std::pow(10.0, 4.0 - std::log10(2.0) * std::min<unsigned>(sizeof(DST_MANTISSA_T), sizeof(SRC_MANTISSA_T)) * 8);
 
 	std::size_t passed = 0;
 
