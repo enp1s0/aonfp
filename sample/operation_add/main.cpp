@@ -5,7 +5,7 @@
 #include <cmath>
 #include <limits>
 
-constexpr std::size_t C = 1lu << 5;
+constexpr std::size_t C = 1lu << 22;
 
 template <class DST_S_EXP_T, class DST_MANTISSA_T, class SRC_S_EXP_T, class SRC_MANTISSA_T>
 void test_add() {
@@ -43,15 +43,20 @@ void test_add() {
 		aonfp::decompose(correct_s_exp, correct_mantissa, correct_ans);
 
 		if (error > threshold) {
+			std::printf("--------------------------------------------------------\n");
 			std::printf("a    : %e\n", test_value_a);
 			std::printf("b    : %e\n", test_value_b);
 			std::printf("SE_A : 0b");aonfp::detail::utils::print_bin<SRC_S_EXP_T>(s_exp_a, true);
 			std::printf("M_A  : 0b");aonfp::detail::utils::print_bin<SRC_MANTISSA_T>(mantissa_a, true);
 			std::printf("SE_B : 0b");aonfp::detail::utils::print_bin<SRC_S_EXP_T>(s_exp_b, true);
 			std::printf("M_B  : 0b");aonfp::detail::utils::print_bin<SRC_MANTISSA_T>(mantissa_b, true);
+			std::printf("===\n");
 			std::printf("SE_AB: 0b");aonfp::detail::utils::print_bin<DST_S_EXP_T>(s_exp_ab, true);
+			std::printf("SE_C : 0b");aonfp::detail::utils::print_bin(correct_s_exp, true);
+			std::printf("===\n");
 			std::printf("M_AB : 0b");aonfp::detail::utils::print_bin<DST_MANTISSA_T>(mantissa_ab, true);
 			std::printf("M_C  : 0b");aonfp::detail::utils::print_bin(correct_mantissa, true);
+			std::printf("===\n");
 			std::printf("{ab = %e, cor = %e} error = %e > [threshold:%e]\n", test_value_ab, correct_ans, error, threshold);
 		} else {
 			passed++;
