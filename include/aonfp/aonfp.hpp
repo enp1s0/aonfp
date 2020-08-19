@@ -56,5 +56,15 @@ AONFP_HOST_DEVICE inline void add(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_ma
 	detail::add(dst_s_exp, dst_mantissa, src_s_exp_a, src_mantissa_a, src_s_exp_b, src_mantissa_b);
 }
 
+template <class DST_S_EXP_T, class DST_MANTISSA_T, class SRC_S_EXP_T, class SRC_MANTISSA_T>
+AONFP_HOST_DEVICE inline void sub(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_mantissa,
+		const SRC_S_EXP_T src_s_exp_a, const SRC_MANTISSA_T src_mantissa_a,
+		const SRC_S_EXP_T src_s_exp_b, const SRC_MANTISSA_T src_mantissa_b) {
+	const auto sign_b = src_s_exp_b & (static_cast<SRC_S_EXP_T>(1) << (sizeof(SRC_S_EXP_T) * 8 - 1));
+	const auto inversed_sign_b = (~sign_b) & (static_cast<SRC_S_EXP_T>(1) << (sizeof(SRC_S_EXP_T) * 8 - 1));
+	const auto sign_inverted_src_s_exp_b = inversed_sign_b | (src_s_exp_b & ((static_cast<SRC_S_EXP_T>(1) << (sizeof(SRC_S_EXP_T) * 8 - 1)) - 1));
+	detail::add(dst_s_exp, dst_mantissa, src_s_exp_a, src_mantissa_a, sign_inverted_src_s_exp_b, src_mantissa_b);
+}
+
 } //namespace aonfp
 #endif

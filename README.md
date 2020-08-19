@@ -27,7 +27,7 @@ Data types for `sign_exponent` and `mantissa` are
 ## Supported operations
 - [x] `mul`
 - [x] `add`
-- [ ] `sub`
+- [x] `sub`
 - [ ] approx `rsqrt`
 
 respectively.
