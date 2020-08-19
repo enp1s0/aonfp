@@ -1,13 +1,12 @@
-#ifndef __AONFP_DETAIL_OPERATORS_HPP__
-#define __AONFP_DETAIL_OPERATORS_HPP__
+#ifndef __AONFP_DETAIL_MUL_HPP__
+#define __AONFP_DETAIL_MUL_HPP__
 #include <type_traits>
 #include "detail.hpp"
 #include "compose.hpp"
+#include "macro.hpp"
+
 namespace aonfp {
 namespace detail {
-struct aonfp_uint128_t {
-	uint64_t x[2];
-};
 template <class RESULT_T>
 struct mul_compute_t {using type = RESULT_T;};
 template <> struct mul_compute_t<uint64_t> {using type = uint64_t;};

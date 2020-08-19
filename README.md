@@ -18,30 +18,39 @@ AONFP restricts the type of these bitstrings to `uint8/16/32/64` to reduce compl
 ### Decomposed data type
 Data types for `sign_exponent` and `mantissa` are
 
-- `uint64`
-- `uint32`
-- `uint16`
-- `uint8`
+- `uint64_t`
+- `uint32_t`
+- `uint16_t`
+- `uint8_t`
 
 
 ## Supported operations
 - [x] `mul`
-- [ ] `add` / `sub`
+- [x] `add`
+- [ ] `sub`
 - [ ] approx `rsqrt`
 
 respectively.
 
 ### Sample code
 ```cpp
-const auto value = static_cast<double>(1.234);
-uint8_t s_exp;
-uint64_t mantissa;
+const auto v0 = static_cast<double>(1.234);
+const auto v1 = static_cast<double>(5.55);
+const auto v2 = static_cast<double>(3.333);
+uint8_t se0, se1, se2, se3, se4;
+uint64_t m0, m1, m2, m3, m4;
 
 // decompose
-aonfp::decompose(s_exp, mantissa, value);
+aonfp::decompose(se0, m0, v0);
+aonfp::decompose(se1, m1, v1);
+aonfp::decompose(se2, m2, v2);
+
+// compute
+aonfp::mul(se3, m3, se0, m0, se1, m1);
+aonfp::add(se4, m4, se2, m2, se3, m3);
 
 // compose
-const auto decomposed_value = aonfp::compose<double>(s_exp, mantissa);
+const auto v3 = aonfp::compose<double>(se4, m4);
 ```
 
 ## CUDA extension
