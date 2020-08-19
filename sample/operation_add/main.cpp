@@ -5,6 +5,8 @@
 #include <cmath>
 #include <limits>
 
+// #define TEST_SUB
+
 constexpr std::size_t C = 1lu << 22;
 
 template <class DST_S_EXP_T, class DST_MANTISSA_T, class SRC_S_EXP_T, class SRC_MANTISSA_T>
@@ -28,15 +30,23 @@ void test_add() {
 
 		DST_S_EXP_T s_exp_ab;
 		DST_MANTISSA_T mantissa_ab;
+#ifdef TEST_SUB
+		aonfp::sub(s_exp_ab, mantissa_ab, s_exp_a, mantissa_a, s_exp_b, mantissa_b);
+#else
 		aonfp::add(s_exp_ab, mantissa_ab, s_exp_a, mantissa_a, s_exp_b, mantissa_b);
+#endif
 
 		const auto test_value_a = aonfp::compose<double>(s_exp_a, mantissa_a);
 		const auto test_value_b = aonfp::compose<double>(s_exp_b, mantissa_b);
 		const auto test_value_ab = aonfp::compose<double>(s_exp_ab, mantissa_ab);
 
+#ifdef TEST_SUB
+		const auto correct_ans = test_value_a - test_value_b;
+#else
 		const auto correct_ans = test_value_a + test_value_b;
+#endif
 		const auto error = std::abs(correct_ans - test_value_ab);
-		const auto threshold = threshold_base * std::abs(correct_ans);// * (std::abs(test_value_a) + std::abs(test_value_b));
+		const auto threshold = threshold_base * std::abs(correct_ans);
 
 		DST_MANTISSA_T correct_mantissa;
 		DST_S_EXP_T correct_s_exp;
