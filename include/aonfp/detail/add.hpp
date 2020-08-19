@@ -58,12 +58,12 @@ AONFP_HOST_DEVICE inline void add(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_ma
 		tmp_dst_mantissa = base_mantissa + adding_mantissa;
 	}
 
-	const auto carry = detail::num_of_leading_zero<compute_mantissa_t>(tmp_dst_mantissa);
+	const auto mantissa_shift_size = detail::num_of_leading_zero<compute_mantissa_t>(tmp_dst_mantissa);
 
-	dst_mantissa = (tmp_dst_mantissa << (carry + 1)) >> ((sizeof(compute_mantissa_t) - sizeof(DST_MANTISSA_T)) * 8);
+	dst_mantissa = (tmp_dst_mantissa << (mantissa_shift_size + 1)) >> ((sizeof(compute_mantissa_t) - sizeof(DST_MANTISSA_T)) * 8);
 
 	// exponential
-	auto dst_exp = (static_cast<long>(base_exp) - detail::get_default_exponent_bias(sizeof(SRC_S_EXP_T) * 8 - 1) + detail::get_default_exponent_bias(sizeof(DST_S_EXP_T) * 8 - 1) - carry + 1);
+	auto dst_exp = (static_cast<long>(base_exp) - detail::get_default_exponent_bias(sizeof(SRC_S_EXP_T) * 8 - 1) + detail::get_default_exponent_bias(sizeof(DST_S_EXP_T) * 8 - 1) - mantissa_shift_size + 1);
 
 	if (dst_exp < 0 || ((sign_a ^ sign_b) && src_mantissa_a == src_mantissa_b && exp_a == exp_b)) {
 		dst_s_exp = detail::get_zero_sign_exponent_bitstring<DST_S_EXP_T>();
