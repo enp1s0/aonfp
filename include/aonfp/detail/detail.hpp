@@ -102,7 +102,9 @@ AONFP_HOST_DEVICE unsigned num_of_bits<uint8_t >(uint8_t  bits) {
 	return bits;
 }
 
-
+// get ntz
+template <class T>
+AONFP_HOST_DEVICE unsigned num_of_training_zero(const T v) {return num_of_bits((v & (-v)) -  1);}
 } //namespace detail
 } //namespace aonfp
 #endif
