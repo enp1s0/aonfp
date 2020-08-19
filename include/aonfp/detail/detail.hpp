@@ -105,6 +105,44 @@ AONFP_HOST_DEVICE unsigned num_of_bits<uint8_t >(uint8_t  bits) {
 // get ntz
 template <class T>
 AONFP_HOST_DEVICE unsigned num_of_training_zero(const T v) {return num_of_bits((v & (-v)) -  1);}
+
+// get nlz
+template <class T>
+AONFP_HOST_DEVICE unsigned num_of_leading_zero(T v);
+template <>
+AONFP_HOST_DEVICE unsigned num_of_leading_zero<uint64_t>(uint64_t v) {
+	v = v | (v >> 1 );
+	v = v | (v >> 2 );
+	v = v | (v >> 4 );
+	v = v | (v >> 8 );
+	v = v | (v >> 16);
+	v = v | (v >> 32);
+	return num_of_bits<uint64_t>(~v);
+}
+template <>
+AONFP_HOST_DEVICE unsigned num_of_leading_zero<uint32_t>(uint32_t v) {
+	v = v | (v >> 1 );
+	v = v | (v >> 2 );
+	v = v | (v >> 4 );
+	v = v | (v >> 8 );
+	v = v | (v >> 16);
+	return num_of_bits<uint32_t>(~v);
+}
+template <>
+AONFP_HOST_DEVICE unsigned num_of_leading_zero<uint16_t>(uint16_t v) {
+	v = v | (v >> 1 );
+	v = v | (v >> 2 );
+	v = v | (v >> 4 );
+	v = v | (v >> 8 );
+	return num_of_bits<uint16_t>(~v);
+}
+template <>
+AONFP_HOST_DEVICE unsigned num_of_leading_zero<uint8_t >(uint8_t  v) {
+	v = v | (v >> 1 );
+	v = v | (v >> 2 );
+	v = v | (v >> 4 );
+	return num_of_bits<uint8_t >(~v);
+}
 } //namespace detail
 } //namespace aonfp
 #endif
