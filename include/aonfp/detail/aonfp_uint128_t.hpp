@@ -1,6 +1,7 @@
 #ifndef __AONFP_DETAIL_UINT128_HPP__
 #define __AONFP_DETAIL_UINT128_HPP__
 #include <cstdint>
+#include "macro.hpp"
 
 namespace aonfp {
 namespace detail {

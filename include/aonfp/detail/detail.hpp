@@ -1,18 +1,12 @@
 #ifndef __AONFP_DETAIL_DETAIL_HPP__
 #define __AONFP_DETAIL_DETAIL_HPP__
 
-#ifndef AONFP_HOST_DEVICE
- #if defined(__CUDA_ARCH__)
-  #define AONFP_HOST_DEVICE __device__ __host__
- #else
-  #define AONFP_HOST_DEVICE
- #endif
-#endif
 #include <limits>
 #include <cstdint>
 #include <type_traits>
 #include "standard_fp.hpp"
 #include "aonfp_uint128_t.hpp"
+#include "macro.hpp"
 
 namespace aonfp {
 namespace detail {

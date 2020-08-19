@@ -3,6 +3,8 @@
 #include <type_traits>
 #include "detail.hpp"
 #include "compose.hpp"
+#include "macro.hpp"
+
 namespace aonfp {
 namespace detail {
 template <class RESULT_T>

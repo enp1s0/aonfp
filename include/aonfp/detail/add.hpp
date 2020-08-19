@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <type_traits>
 #include "detail.hpp"
+#include "macro.hpp"
 
 namespace aonfp {
 namespace detail {
