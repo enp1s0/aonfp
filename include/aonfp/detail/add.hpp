@@ -51,27 +51,27 @@ AONFP_HOST_DEVICE inline void add(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_ma
 	const auto sign_a = detail::get_sign_bitstring(src_s_exp_a);
 	const auto sign_b = detail::get_sign_bitstring(src_s_exp_b);
 
-	// calculate mantissa
 	compute_mantissa_t tmp_dst_mantissa;
+
 	if ((sign_a ^ sign_b) != 0) {
 		tmp_dst_mantissa = augend_mantissa - addend_mantissa;
 	} else {
 		tmp_dst_mantissa = augend_mantissa + addend_mantissa;
 	}
+
 	const auto mantissa_shift_size = detail::num_of_leading_zero<compute_mantissa_t>(tmp_dst_mantissa);
+
 	dst_mantissa = (tmp_dst_mantissa << (mantissa_shift_size + 1)) >> ((sizeof(compute_mantissa_t) - sizeof(DST_MANTISSA_T)) * 8);
 
-	// calculate exponential
+	// exponential
 	auto dst_exp = (static_cast<long>(base_exp) - detail::get_default_exponent_bias(sizeof(SRC_S_EXP_T) * 8 - 1) + detail::get_default_exponent_bias(sizeof(DST_S_EXP_T) * 8 - 1) - mantissa_shift_size + 1);
 
-	// if underflowed
 	if (dst_exp < 0 || ((sign_a ^ sign_b) && src_mantissa_a == src_mantissa_b && exp_a == exp_b)) {
 		dst_s_exp = detail::get_zero_sign_exponent_bitstring<DST_S_EXP_T>();
 		dst_mantissa = detail::get_zero_mantissa_bitstring<DST_MANTISSA_T>();
 		return;
 	}
 
-	// set sign
 	if (sign_a && sign_b) {
 		negative = true;
 	} else if (sign_a) {
