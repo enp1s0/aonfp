@@ -1,5 +1,6 @@
 #ifndef __AONFP_DETAIL_ADD_HPP__
 #define __AONFP_DETAIL_ADD_HPP__
+#include <algorithm>
 #include <type_traits>
 #include "detail.hpp"
 
