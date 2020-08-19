@@ -19,33 +19,34 @@ AONFP_HOST_DEVICE inline void add(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_ma
 	const auto base_exp = exp_a > exp_b ? exp_a : exp_b;
 	const int shift = 2 * base_exp - exp_a - exp_b;
 
-	compute_mantissa_t base_mantissa;
-	compute_mantissa_t adding_mantissa;
+	compute_mantissa_t augend_mantissa;
+	compute_mantissa_t addend_mantissa;
 
 	bool negative = false;
 
 	if (exp_a > exp_b) {
-		base_mantissa = src_mantissa_a;
-		adding_mantissa = src_mantissa_b;
+		augend_mantissa = src_mantissa_a;
+		addend_mantissa = src_mantissa_b;
 	} else if (exp_b > exp_a) {
-		base_mantissa = src_mantissa_b;
-		adding_mantissa = src_mantissa_a;
+		augend_mantissa = src_mantissa_b;
+		addend_mantissa = src_mantissa_a;
 	} else {
-		base_mantissa = std::max(src_mantissa_a, src_mantissa_b);
-		adding_mantissa = std::min(src_mantissa_a, src_mantissa_b);
+		augend_mantissa = std::max(src_mantissa_a, src_mantissa_b);
+		addend_mantissa = std::min(src_mantissa_a, src_mantissa_b);
 	}
 
-	adding_mantissa <<= ((sizeof(compute_mantissa_t) - sizeof(SRC_MANTISSA_T)) * 8);
-	base_mantissa <<= ((sizeof(compute_mantissa_t) - sizeof(SRC_MANTISSA_T)) * 8);
+	addend_mantissa <<= ((sizeof(compute_mantissa_t) - sizeof(SRC_MANTISSA_T)) * 8);
+	augend_mantissa <<= ((sizeof(compute_mantissa_t) - sizeof(SRC_MANTISSA_T)) * 8);
 
-	adding_mantissa = (adding_mantissa >> 1) | (static_cast<compute_mantissa_t>(1) << (sizeof(compute_mantissa_t) * 8 - 1));
-	base_mantissa = (base_mantissa >> 1) | (static_cast<compute_mantissa_t>(1) << (sizeof(compute_mantissa_t) * 8 - 1));
+	addend_mantissa = (addend_mantissa >> 1) | (static_cast<compute_mantissa_t>(1) << (sizeof(compute_mantissa_t) * 8 - 1));
+	augend_mantissa = (augend_mantissa >> 1) | (static_cast<compute_mantissa_t>(1) << (sizeof(compute_mantissa_t) * 8 - 1));
 
 	// For getting carry
-	adding_mantissa >>= 1;
-	base_mantissa >>= 1;
+	addend_mantissa >>= 1;
+	augend_mantissa >>= 1;
 
-	adding_mantissa >>= shift;
+	// shift addend
+	addend_mantissa >>= shift;
 
 	const auto sign_a = detail::get_sign_bitstring(src_s_exp_a);
 	const auto sign_b = detail::get_sign_bitstring(src_s_exp_b);
@@ -53,9 +54,9 @@ AONFP_HOST_DEVICE inline void add(DST_S_EXP_T& dst_s_exp, DST_MANTISSA_T& dst_ma
 	compute_mantissa_t tmp_dst_mantissa;
 
 	if ((sign_a ^ sign_b) != 0) {
-		tmp_dst_mantissa = base_mantissa - adding_mantissa;
+		tmp_dst_mantissa = augend_mantissa - addend_mantissa;
 	} else {
-		tmp_dst_mantissa = base_mantissa + adding_mantissa;
+		tmp_dst_mantissa = augend_mantissa + addend_mantissa;
 	}
 
 	const auto mantissa_shift_size = detail::num_of_leading_zero<compute_mantissa_t>(tmp_dst_mantissa);
