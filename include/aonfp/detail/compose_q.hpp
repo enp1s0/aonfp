@@ -87,6 +87,38 @@ template <> AONFP_HOST_DEVICE inline uint8_t decompose_mantissa<uint8_t>(const f
 	move_up = (mantissa_bs_a & 0x800000) >> 23;
 	return (mantissa_bs_a >> 14) | (static_cast<uint8_t>(sign) << 7);
 }
+
+template <class T>
+AONFP_HOST_DEVICE inline T decompose_exponent(const double v, const int move_up, uo_flow_t& uo) {
+	const auto exponent = (((*reinterpret_cast<const uint64_t*>(&v)) & 0x7ff0000000000000lu) >> 52) + move_up;
+	if (!exponent) {
+		return 0;
+	}
+	const auto src_exponent = static_cast<typename std::make_signed<T>::type>(exponent) - detail::get_default_exponent_bias(11);
+	if (src_exponent > 0) {
+		uo = uo_flow_overflow;
+		return 0;
+	}
+	const auto dst_exponent = static_cast<T>(-src_exponent);
+	uo = uo_flow_non;
+	return dst_exponent;
+}
+
+template <class T>
+AONFP_HOST_DEVICE inline T decompose_exponent(const float v, const int move_up, uo_flow_t& uo) {
+	const auto exponent = (((*reinterpret_cast<const uint32_t*>(&v)) & 0x7f800000) >> 23) + move_up;
+	if (!exponent) {
+		return 0;
+	}
+	const auto src_exponent = static_cast<typename std::make_signed<T>::type>(exponent) - detail::get_default_exponent_bias(8);
+	if (src_exponent > 0) {
+		uo = uo_flow_overflow;
+		return 0;
+	}
+	const auto dst_exponent = static_cast<T>(-src_exponent);
+	uo = uo_flow_non;
+	return dst_exponent;
+}
 } // namespace detail
 } // namespace aonfp
 
