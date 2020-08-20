@@ -20,31 +20,34 @@ AONFP_HOST_DEVICE inline T decompose_mantissa(const double v, int& move_up);
 template <> AONFP_HOST_DEVICE inline uint64_t decompose_mantissa<uint64_t>(const double v, int& move_up) {
 	move_up = 0;
 	const auto bitstrings = *reinterpret_cast<const uint64_t*>(&v);
-	return ((bitstrings & 0xffffffffffffflu) << 11) || (bitstrings & 0x8000000000000000lu);
+	return ((bitstrings & 0xffffffffffffflu) << 11) | (bitstrings & 0x8000000000000000lu);
 }
 
 template <> AONFP_HOST_DEVICE inline uint32_t decompose_mantissa<uint32_t>(const double v, int& move_up) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
+	const auto sign = (*reinterpret_cast<const uint64_t*>(&v)) >> 53;
 	const auto r_s = (mantissa_bs & 0x100000lu) << 1;
 	const auto mantissa_bs_a = mantissa_bs + r_s;
 	move_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
-	return mantissa_bs_a >> 21;
+	return (mantissa_bs_a >> 21) | (static_cast<uint32_t>(sign) << 31);
 }
 
 template <> AONFP_HOST_DEVICE inline uint16_t decompose_mantissa<uint16_t>(const double v, int& move_up) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
+	const auto sign = (*reinterpret_cast<const uint64_t*>(&v)) >> 53;
 	const auto r_s = (mantissa_bs & 0x1000000000lu) << 1;
 	const auto mantissa_bs_a = mantissa_bs + r_s;
 	move_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
-	return mantissa_bs_a >> 37;
+	return (mantissa_bs_a >> 37) | (static_cast<uint16_t>(sign) << 15);
 }
 
 template <> AONFP_HOST_DEVICE inline uint8_t decompose_mantissa<uint8_t>(const double v, int& move_up) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
+	const auto sign = (*reinterpret_cast<const uint64_t*>(&v)) >> 53;
 	const auto r_s = (mantissa_bs & 0x100000000000lu) << 1;
 	const auto mantissa_bs_a = mantissa_bs + r_s;
 	move_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
-	return mantissa_bs_a >> 45;
+	return (mantissa_bs_a >> 45) | (static_cast<uint8_t>(sign) << 7);
 }
 } // namespace detail
 } // namespace aonfp
