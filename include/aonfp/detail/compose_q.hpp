@@ -25,7 +25,7 @@ template <> AONFP_HOST_DEVICE inline uint64_t decompose_mantissa<uint64_t>(const
 
 template <> AONFP_HOST_DEVICE inline uint32_t decompose_mantissa<uint32_t>(const double v, int& move_up) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
-	const auto sign = (*reinterpret_cast<const uint64_t*>(&v)) >> 53;
+	const auto sign = (*reinterpret_cast<const uint64_t*>(&v)) >> 63;
 	const auto r_s = (mantissa_bs & 0x100000lu) << 1;
 	const auto mantissa_bs_a = mantissa_bs + r_s;
 	move_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
@@ -34,7 +34,7 @@ template <> AONFP_HOST_DEVICE inline uint32_t decompose_mantissa<uint32_t>(const
 
 template <> AONFP_HOST_DEVICE inline uint16_t decompose_mantissa<uint16_t>(const double v, int& move_up) {
 	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
-	const auto sign = (*reinterpret_cast<const uint64_t*>(&v)) >> 53;
+	const auto sign = (*reinterpret_cast<const uint64_t*>(&v)) >> 63;
 	const auto r_s = (mantissa_bs & 0x1000000000lu) << 1;
 	const auto mantissa_bs_a = mantissa_bs + r_s;
 	move_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
