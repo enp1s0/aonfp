@@ -1,18 +1,12 @@
 #ifndef __AONFP_AONFP_HPP__
 #define __AONFP_AONFP_HPP__
-#ifndef AONFP_HOST_DEVICE
- #if defined(__CUDA_ARCH__)
-  #define AONFP_HOST_DEVICE __device__ __host__
- #else
-  #define AONFP_HOST_DEVICE
- #endif
-#endif
 
 #include "detail/detail.hpp"
 #include "detail/compose.hpp"
 #include "detail/standard_fp.hpp"
 #include "detail/mul.hpp"
 #include "detail/add.hpp"
+#include "detail/macro.hpp"
 
 namespace aonfp {
 template <class T, class S_EXP_T, class MANTISSA_T>
