@@ -119,6 +119,20 @@ AONFP_HOST_DEVICE inline T decompose_exponent(const float v, const int move_up, 
 	uo = uo_flow_non;
 	return dst_exponent;
 }
+
+template <class T, class MANTISSA_T>
+AONFP_HOST_DEVICE inline T compose_mantissa(const MANTISSA_T src_mantissa, const T src_fp, int& move_up) {
+	const auto mantissa = src_mantissa << 1;
+	const auto shifted_m = mantissa >> (sizeof(MANTISSA_T) * 8 - standard_fp::get_mantissa_size<T>());
+	const auto s = (mantissa >> (sizeof(MANTISSA_T) * 8 - standard_fp::get_mantissa_size<T>() - 1) & 0x1);
+	const auto shifted_m_a = shifted_m + s;
+	move_up = (shifted_m_a >> standard_fp::get_mantissa_size<T>());
+	const auto full_bitstring = shifted_m_a | (*reinterpret_cast<const MANTISSA_T*>(&src_fp) & (~((static_cast<MANTISSA_T>(1) << standard_fp::get_exponent_size<T>()) - 1)));
+	const auto mantissa_mask = ~static_cast<typename detail::bitstring_t<T>::type>(1) << (sizeof(typename detail::bitstring_t<T>::type) * 8 - 1);
+	const auto sign = static_cast<typename detail::bitstring_t<T>::type>(src_mantissa >> (sizeof(T) * 8 - 1)) << (sizeof(typename detail::bitstring_t<T>::type) * 8 - 1);
+	const auto bs = (full_bitstring & mantissa_mask) | sign;
+	return *reinterpret_cast<const T*>(&bs);
+}
 } // namespace detail
 } // namespace aonfp
 
