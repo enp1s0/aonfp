@@ -15,63 +15,31 @@ namespace aonfp {
 namespace detail {
 
 // composer / decomposer
-template <class T>
-AONFP_HOST_DEVICE inline T decompose_mantissa(const double v, int& move_up);
-template <> AONFP_HOST_DEVICE inline uint64_t decompose_mantissa<uint64_t>(const double v, int& move_up) {
+template <class T, class S>
+AONFP_HOST_DEVICE inline T decompose_mantissa(const S v, int& move_up) {
+	constexpr unsigned ieee_mantissa_size = aonfp::detail::standard_fp::get_mantissa_size<S>();
+	constexpr unsigned aonfp_mantissa_size = sizeof(T) * 8;
+
+	using ieee_bitstring_t = typename aonfp::detail::bitstring_t<S>::type;
+	constexpr auto mantissa_mask = (static_cast<ieee_bitstring_t>(1) << aonfp::detail::standard_fp::get_mantissa_size<S>()) - 1;
+
+	const auto ieee_mantissa_bitstring = ((*reinterpret_cast<const ieee_bitstring_t*>(&v)) & mantissa_mask) << (1 + aonfp::detail::standard_fp::get_exponent_size<S>());
 	move_up = 0;
-	return (*reinterpret_cast<const uint64_t*>(&v)) << 12;
-}
 
-template <> AONFP_HOST_DEVICE inline uint32_t decompose_mantissa<uint32_t>(const double v, int& move_up) {
-	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
-	const auto r_s = (mantissa_bs & 0x80000lu) << 1;
-	const auto mantissa_bs_a = mantissa_bs + r_s;
-	move_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
-	return mantissa_bs_a >> 20;
-}
+	if (ieee_mantissa_size <= aonfp_mantissa_size) {
+		return static_cast<T>(ieee_mantissa_bitstring) << ((sizeof(T) - sizeof(ieee_bitstring_t)) * 8);
+	} else {
+		// rounding
+		constexpr unsigned shift_size = (sizeof(ieee_bitstring_t) - sizeof(T)) * 8;
+		const ieee_bitstring_t cut_msb = ieee_mantissa_bitstring & (static_cast<ieee_bitstring_t>(1) << (shift_size - 1));
 
-template <> AONFP_HOST_DEVICE inline uint16_t decompose_mantissa<uint16_t>(const double v, int& move_up) {
-	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
-	const auto r_s = (mantissa_bs & 0x800000000lu) << 1;
-	const auto mantissa_bs_a = mantissa_bs + r_s;
-	move_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
-	return mantissa_bs_a >> 36;
-}
+		const ieee_bitstring_t ma = (ieee_mantissa_bitstring + (cut_msb << 1)) >> shift_size;
 
-template <> AONFP_HOST_DEVICE inline uint8_t decompose_mantissa<uint8_t>(const double v, int& move_up) {
-	const auto mantissa_bs = (*reinterpret_cast<const uint64_t*>(&v)) & 0xffffffffffffflu;
-	const auto r_s = (mantissa_bs & 0x80000000000lu) << 1;
-	const auto mantissa_bs_a = mantissa_bs + r_s;
-	move_up = (mantissa_bs_a & 0x10000000000000lu) >> 52;
-	return mantissa_bs_a >> 44;
-}
-
-template <class T>
-AONFP_HOST_DEVICE inline T decompose_mantissa(const float v, int& move_up);
-template <> AONFP_HOST_DEVICE inline uint64_t decompose_mantissa<uint64_t>(const float v, int& move_up) {
-	move_up = 0;
-	return (*reinterpret_cast<const uint64_t*>(&v)) << (9 + 32);
-}
-
-template <> AONFP_HOST_DEVICE inline uint32_t decompose_mantissa<uint32_t>(const float v, int& move_up) {
-	move_up = 0;
-	return (*reinterpret_cast<const uint32_t*>(&v)) << 9;
-}
-
-template <> AONFP_HOST_DEVICE inline uint16_t decompose_mantissa<uint16_t>(const float v, int& move_up) {
-	const auto mantissa_bs = (*reinterpret_cast<const uint32_t*>(&v)) & 0x7fffff;
-	const auto r_s = (mantissa_bs & 0x40) << 1;
-	const auto mantissa_bs_a = mantissa_bs + r_s;
-	move_up = (mantissa_bs_a & 0x800000) >> 23;
-	return mantissa_bs_a >> 7;
-}
-
-template <> AONFP_HOST_DEVICE inline uint8_t decompose_mantissa<uint8_t>(const float v, int& move_up) {
-	const auto mantissa_bs = (*reinterpret_cast<const uint32_t*>(&v)) & 0x7fffff;
-	const auto r_s = (mantissa_bs & 0x8000) << 1;
-	const auto mantissa_bs_a = mantissa_bs + r_s;
-	move_up = (mantissa_bs_a & 0x800000) >> 23;
-	return mantissa_bs_a >> 15;
+		if (ma == 0 && cut_msb != 0) {
+			move_up = 1;
+		}
+		return static_cast<T>(ma);
+	}
 }
 
 template <class T>
