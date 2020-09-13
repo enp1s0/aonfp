@@ -60,9 +60,9 @@ AONFP_HOST_DEVICE constexpr long get_min_exponent(const unsigned exponent_length
 
 // bit operations
 template <class T>
-AONFP_HOST_DEVICE unsigned num_of_bits(T bits);
+AONFP_HOST_DEVICE inline unsigned num_of_bits(T bits);
 template <>
-AONFP_HOST_DEVICE unsigned num_of_bits<uint64_t>(uint64_t bits) {
+AONFP_HOST_DEVICE inline unsigned num_of_bits<uint64_t>(uint64_t bits) {
 	bits = (bits & 0x5555555555555555lu) + (bits >> 1  & 0x5555555555555555lu);
 	bits = (bits & 0x3333333333333333lu) + (bits >> 2  & 0x3333333333333333lu);
 	bits = (bits & 0x0f0f0f0f0f0f0f0flu) + (bits >> 4  & 0x0f0f0f0f0f0f0f0flu);
@@ -72,7 +72,7 @@ AONFP_HOST_DEVICE unsigned num_of_bits<uint64_t>(uint64_t bits) {
 	return bits;
 }
 template <>
-AONFP_HOST_DEVICE unsigned num_of_bits<uint32_t>(uint32_t bits) {
+AONFP_HOST_DEVICE inline unsigned num_of_bits<uint32_t>(uint32_t bits) {
 	bits = (bits & 0x55555555u) + (bits >> 1  & 0x55555555u);
 	bits = (bits & 0x33333333u) + (bits >> 2  & 0x33333333u);
 	bits = (bits & 0x0f0f0f0fu) + (bits >> 4  & 0x0f0f0f0fu);
@@ -81,7 +81,7 @@ AONFP_HOST_DEVICE unsigned num_of_bits<uint32_t>(uint32_t bits) {
 	return bits;
 }
 template <>
-AONFP_HOST_DEVICE unsigned num_of_bits<uint16_t>(uint16_t bits) {
+AONFP_HOST_DEVICE inline unsigned num_of_bits<uint16_t>(uint16_t bits) {
 	bits = (bits & 0x5555u) + (bits >> 1 & 0x5555u);
 	bits = (bits & 0x3333u) + (bits >> 2 & 0x3333u);
 	bits = (bits & 0x0f0fu) + (bits >> 4 & 0x0f0fu);
@@ -89,7 +89,7 @@ AONFP_HOST_DEVICE unsigned num_of_bits<uint16_t>(uint16_t bits) {
 	return bits;
 }
 template <>
-AONFP_HOST_DEVICE unsigned num_of_bits<uint8_t >(uint8_t  bits) {
+AONFP_HOST_DEVICE inline unsigned num_of_bits<uint8_t >(uint8_t  bits) {
 	bits = (bits & 0x55u) + (bits >> 1 & 0x55u);
 	bits = (bits & 0x33u) + (bits >> 2 & 0x33u);
 	bits = (bits & 0x0fu) + (bits >> 4 & 0x0fu);
@@ -102,9 +102,9 @@ AONFP_HOST_DEVICE unsigned num_of_training_zero(const T v) {return num_of_bits((
 
 // get nlz
 template <class T>
-AONFP_HOST_DEVICE unsigned num_of_leading_zero(T v);
+AONFP_HOST_DEVICE inline unsigned num_of_leading_zero(T v);
 template <>
-AONFP_HOST_DEVICE unsigned num_of_leading_zero<uint64_t>(uint64_t v) {
+AONFP_HOST_DEVICE inline unsigned num_of_leading_zero<uint64_t>(uint64_t v) {
 	v = v | (v >> 1 );
 	v = v | (v >> 2 );
 	v = v | (v >> 4 );
@@ -114,7 +114,7 @@ AONFP_HOST_DEVICE unsigned num_of_leading_zero<uint64_t>(uint64_t v) {
 	return num_of_bits<uint64_t>(~v);
 }
 template <>
-AONFP_HOST_DEVICE unsigned num_of_leading_zero<uint32_t>(uint32_t v) {
+AONFP_HOST_DEVICE inline unsigned num_of_leading_zero<uint32_t>(uint32_t v) {
 	v = v | (v >> 1 );
 	v = v | (v >> 2 );
 	v = v | (v >> 4 );
@@ -123,7 +123,7 @@ AONFP_HOST_DEVICE unsigned num_of_leading_zero<uint32_t>(uint32_t v) {
 	return num_of_bits<uint32_t>(~v);
 }
 template <>
-AONFP_HOST_DEVICE unsigned num_of_leading_zero<uint16_t>(uint16_t v) {
+AONFP_HOST_DEVICE inline unsigned num_of_leading_zero<uint16_t>(uint16_t v) {
 	v = v | (v >> 1 );
 	v = v | (v >> 2 );
 	v = v | (v >> 4 );
@@ -131,7 +131,7 @@ AONFP_HOST_DEVICE unsigned num_of_leading_zero<uint16_t>(uint16_t v) {
 	return num_of_bits<uint16_t>(~v);
 }
 template <>
-AONFP_HOST_DEVICE unsigned num_of_leading_zero<uint8_t >(uint8_t  v) {
+AONFP_HOST_DEVICE inline unsigned num_of_leading_zero<uint8_t >(uint8_t  v) {
 	v = v | (v >> 1 );
 	v = v | (v >> 2 );
 	v = v | (v >> 4 );
