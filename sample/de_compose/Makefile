@@ -1,8 +1,9 @@
 CXX=g++
 CXXFLAGS=-std=c++11 -I../../include -Wall
+HEADERS=$(shell find ../../include -name '*.hpp')
 TARGET=de_compose.test
 
-$(TARGET):main.cpp
+$(TARGET):main.cpp $(HEADERS)
 	$(CXX) $< -o $@ $(CXXFLAGS)
 
 clean:
