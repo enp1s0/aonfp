@@ -75,7 +75,7 @@ AONFP_HOST_DEVICE inline T compose_mantissa(const MANTISSA_T mantissa, const T s
 		const auto s = (mantissa >> (sizeof(MANTISSA_T) * 8 - standard_fp::get_mantissa_size<T>() - 1) & 0x1);
 		const auto shifted_m_a = shifted_m + s;
 		move_up = (shifted_m_a >> standard_fp::get_mantissa_size<T>());
-		const auto full_bitstring = shifted_m_a | (*reinterpret_cast<const MANTISSA_T*>(&src_fp) & (~((static_cast<MANTISSA_T>(1) << standard_fp::get_exponent_size<T>()) - 1)));
+		const auto full_bitstring = shifted_m_a | (*reinterpret_cast<const MANTISSA_T*>(&src_fp) & (~((static_cast<MANTISSA_T>(1) << standard_fp::get_mantissa_size<T>()) - 1)));
 		return *reinterpret_cast<const T*>(&full_bitstring);
 	} else {
 		const auto shifted_m = static_cast<ieee_bitstring_t>(mantissa) << (aonfp::detail::standard_fp::get_mantissa_size<T>() - sizeof(MANTISSA_T) * 8);
