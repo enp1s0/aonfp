@@ -25,6 +25,13 @@ AONFP_HOST_DEVICE inline void decompose(EXP_T& exp, S_MANTISSA_T& s_mantissa, co
 		return;
 	}
 }
+
+template <class T, class EXP_T, class S_MANTISSA_T>
+AONFP_HOST_DEVICE inline T compose(const EXP_T s_exp, const S_MANTISSA_T mantissa) {
+	int move_up;
+	const auto fp_mantissa = detail::q::compose_sign_mantissa<T, S_MANTISSA_T>(mantissa, 1, move_up);
+	return detail::q::compose_exponent<T, EXP_T>(s_exp, fp_mantissa, move_up);
+}
 } // namespace q
 } // namespace aonfp
 #endif
