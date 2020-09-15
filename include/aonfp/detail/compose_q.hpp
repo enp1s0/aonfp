@@ -73,7 +73,7 @@ AONFP_HOST_DEVICE inline T compose_sign_mantissa(const S_MANTISSA_T mantissa_q, 
 
 	// src exp
 	constexpr auto src_mantissa_size = aonfp::detail::standard_fp::get_mantissa_size<T>();
-	const auto src_exp = (((*reinterpret_cast<const T*>(&src_fp)) << 1) >> (1 + src_mantissa_size) << src_mantissa_size);
+	const auto src_exp = (((*reinterpret_cast<const ieee_bitstring_t*>(&src_fp)) << 1) >> (1 + src_mantissa_size) << src_mantissa_size);
 
 	if (sizeof(S_MANTISSA_T) * 8 > aonfp::detail::standard_fp::get_mantissa_size<T>()) {
 		const auto shifted_m = mantissa >> (sizeof(S_MANTISSA_T) * 8 - standard_fp::get_mantissa_size<T>());
