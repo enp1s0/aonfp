@@ -1,6 +1,7 @@
 #ifndef __AONFP_DETAIL_UTILS_HPP__
 #define __AONFP_DETAIL_UTILS_HPP__
 #include <iostream>
+#include "detail.hpp"
 namespace aonfp {
 namespace detail {
 namespace utils {
@@ -10,6 +11,8 @@ template <> void print_hex<uint64_t>(const uint64_t v, const bool line_break) {p
 template <> void print_hex<uint32_t>(const uint32_t v, const bool line_break) {printf("0x%08x", v);if(line_break)printf("\n");}
 template <> void print_hex<uint16_t>(const uint16_t v, const bool line_break) {printf("0x%04x", v);if(line_break)printf("\n");}
 template <> void print_hex<uint8_t >(const uint8_t  v, const bool line_break) {printf("0x%02x", v);if(line_break)printf("\n");}
+template <> void print_hex<double  >(const double   v, const bool line_break) {print_hex(*reinterpret_cast<const detail::bitstring_t<double>::type*>(&v), line_break);}
+template <> void print_hex<float   >(const float    v, const bool line_break) {print_hex(*reinterpret_cast<const detail::bitstring_t<float >::type*>(&v), line_break);}
 
 template <class T>
 inline void print_bin(const T v, const bool line_break = false) {
@@ -20,6 +23,8 @@ inline void print_bin(const T v, const bool line_break = false) {
 		std::printf("\n");
 	}
 }
+template <> void print_bin<double>(const double v, const bool line_break) {print_bin(*reinterpret_cast<const detail::bitstring_t<double>::type*>(&v), line_break);}
+template <> void print_bin<float >(const float  v, const bool line_break) {print_bin(*reinterpret_cast<const detail::bitstring_t<float >::type*>(&v), line_break);}
 
 template <class T>
 const char* get_type_name_string();
