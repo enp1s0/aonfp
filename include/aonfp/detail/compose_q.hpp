@@ -18,7 +18,7 @@ namespace q {
 template <class T, class S>
 AONFP_HOST_DEVICE inline T decompose_sign_mantissa(const S v, int& move_up) {
 	constexpr unsigned ieee_mantissa_size = aonfp::detail::standard_fp::get_mantissa_size<S>();
-	constexpr unsigned aonfp_mantissa_size = sizeof(T) * 8 - 1;
+	constexpr unsigned aonfp_mantissa_size = sizeof(T) * 8;
 
 	using ieee_bitstring_t = typename aonfp::detail::bitstring_t<S>::type;
 	constexpr auto mantissa_mask = (static_cast<ieee_bitstring_t>(1) << aonfp::detail::standard_fp::get_mantissa_size<S>()) - 1;
