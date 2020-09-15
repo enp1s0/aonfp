@@ -66,7 +66,7 @@ AONFP_HOST_DEVICE inline T decompose_exponent_q(const S v, const int move_up, uo
 }
 
 template <class T, class MANTISSA_T>
-AONFP_HOST_DEVICE inline T compose_mantissa_q(const MANTISSA_T mantissa_q, const T src_fp, int& move_up) {
+AONFP_HOST_DEVICE inline T compose_sign_mantissa_q(const MANTISSA_T mantissa_q, const T src_fp, int& move_up) {
 	using ieee_bitstring_t = typename aonfp::detail::bitstring_t<T>::type;
 	const auto mantissa = mantissa_q << 1;
 	const auto sign = mantissa_q >> (sizeof(MANTISSA_T) * 8 - 1);
