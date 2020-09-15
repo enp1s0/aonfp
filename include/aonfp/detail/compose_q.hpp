@@ -89,6 +89,23 @@ AONFP_HOST_DEVICE inline T compose_sign_mantissa_q(const S_MANTISSA_T mantissa_q
 		return *reinterpret_cast<const T*>(&full_bitstring);
 	}
 }
+
+template <class T, class EXP_T>
+AONFP_HOST_DEVICE inline T compose_exponent_q(const EXP_T exp, const T src_fp, const int move_up) {
+	const auto e = -static_cast<int>(exp);
+	auto dst_exponent = static_cast<typename bitstring_t<T>::type>(0);
+	if (e > -static_cast<int>(aonfp::detail::standard_fp::get_exponent_size<T>())) {
+		const auto bias = aonfp::detail::get_default_exponent_bias(aonfp::detail::standard_fp::get_exponent_size<T>());
+		dst_exponent = e + bias;
+	}
+	const auto dst_exponent_bitstring = dst_exponent << standard_fp::get_mantissa_size<T>();
+
+	const auto dst_mantissa_bitstring = *reinterpret_cast<const typename bitstring_t<T>::type*>(&src_fp) & ((static_cast<typename bitstring_t<T>::type>(1) << standard_fp::get_mantissa_size<T>()) - 1);
+
+	const auto full_bitstring = dst_exponent_bitstring | dst_mantissa_bitstring;
+
+	return *reinterpret_cast<const T*>(&full_bitstring);
+}
 } // namespace detail
 } // namespace aonfp
 
