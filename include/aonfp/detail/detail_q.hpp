@@ -24,10 +24,10 @@ template <class T>
 AONFP_HOST_DEVICE constexpr T get_inf_sign_mantissa_bitstring(const T s_mantissa) {return static_cast<T>(0) | get_sign_bitstring(s_mantissa);};
 
 template <class T>
-AONFP_HOST_DEVICE constexpr T get_zero_sign_exponent_bitstring() {return 0;}
+AONFP_HOST_DEVICE constexpr T get_zero_exponent_bitstring() {return 0;}
 
 template <class T>
-AONFP_HOST_DEVICE constexpr T get_zero_mantissa_bitstring(const T s_mantissa) {return get_sign_bitstring(s_mantissa);};
+AONFP_HOST_DEVICE constexpr T get_zero_sign_mantissa_bitstring(const T s_mantissa) {return get_sign_bitstring(s_mantissa);};
 } // namespace q
 } // namespace detail
 } // namespace aonfp
