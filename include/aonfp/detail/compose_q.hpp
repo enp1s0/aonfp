@@ -30,7 +30,7 @@ AONFP_HOST_DEVICE inline T decompose_sign_mantissa(const S v, int& move_up) {
 	if (ieee_mantissa_size <= aonfp_mantissa_size) {
 		const auto result_mantissa = static_cast<T>(ieee_mantissa_bitstring) << (aonfp_mantissa_size - sizeof(ieee_bitstring_t) * 8);
 		const auto result_sign = static_cast<T>(ieee_bitstring >> (sizeof(ieee_bitstring_t) * 8 - 1)) << (sizeof(T) * 8 - 1);
-		return result_sign | result_sign;
+		return result_mantissa | result_sign;
 	} else {
 		// rounding
 		constexpr unsigned shift_size = (sizeof(ieee_bitstring_t) - sizeof(T)) * 8 + 1;
@@ -43,7 +43,7 @@ AONFP_HOST_DEVICE inline T decompose_sign_mantissa(const S v, int& move_up) {
 		}
 		const auto result_mantissa = static_cast<T>(ma);
 		const auto result_sign = static_cast<T>(ieee_bitstring >> (sizeof(ieee_bitstring_t) * 8 - 1)) << (sizeof(T) * 8 - 1);
-		return result_sign | result_sign;
+		return result_mantissa | result_sign;
 	}
 }
 
@@ -80,19 +80,20 @@ AONFP_HOST_DEVICE inline T compose_sign_mantissa(const S_MANTISSA_T mantissa_q, 
 		const auto s = (mantissa >> (sizeof(S_MANTISSA_T) * 8 - standard_fp::get_mantissa_size<T>() - 1) & 0x1);
 		const auto shifted_m_a = shifted_m + s;
 		move_up = (shifted_m_a >> standard_fp::get_mantissa_size<T>());
-		const auto full_bitstring = shifted_m_a | src_exp | (static_cast<ieee_bitstring_t>(sign) << (sizeof(ieee_bitstring_t) * 8 - 1));
+		const auto full_bitstring = shifted_m_a | src_exp | ((static_cast<ieee_bitstring_t>(sign) << (sizeof(ieee_bitstring_t) * 8 - 1)));
 		return *reinterpret_cast<const T*>(&full_bitstring);
 	} else {
 		const auto shifted_m = static_cast<ieee_bitstring_t>(mantissa) << (aonfp::detail::standard_fp::get_mantissa_size<T>() - sizeof(S_MANTISSA_T) * 8);
 		move_up = 0;
-		const auto full_bitstring = shifted_m | src_exp | (static_cast<ieee_bitstring_t>(sign) << (sizeof(ieee_bitstring_t) * 8 - 1));
+		const auto full_bitstring = shifted_m | src_exp | ((static_cast<ieee_bitstring_t>(sign) << (sizeof(ieee_bitstring_t) * 8 - 1)));
 		return *reinterpret_cast<const T*>(&full_bitstring);
 	}
 }
 
 template <class T, class EXP_T>
 AONFP_HOST_DEVICE inline T compose_exponent(const EXP_T exp, const T src_fp, const int move_up) {
-	const auto e = -static_cast<int>(exp);
+	using ieee_bitstring_t = typename bitstring_t<T>::type;
+	const auto e = -(static_cast<int>(exp) + move_up);
 	auto dst_exponent = static_cast<typename bitstring_t<T>::type>(0);
 	if (e > -static_cast<int>(aonfp::detail::standard_fp::get_exponent_size<T>())) {
 		const auto bias = aonfp::detail::get_default_exponent_bias(aonfp::detail::standard_fp::get_exponent_size<T>());
@@ -100,7 +101,8 @@ AONFP_HOST_DEVICE inline T compose_exponent(const EXP_T exp, const T src_fp, con
 	}
 	const auto dst_exponent_bitstring = dst_exponent << standard_fp::get_mantissa_size<T>();
 
-	const auto dst_mantissa_bitstring = *reinterpret_cast<const typename bitstring_t<T>::type*>(&src_fp) & ((static_cast<typename bitstring_t<T>::type>(1) << standard_fp::get_mantissa_size<T>()) - 1);
+	const auto dst_mantissa_bitstring = *reinterpret_cast<const typename bitstring_t<T>::type*>(&src_fp) &
+		(((static_cast<ieee_bitstring_t>(1) << standard_fp::get_mantissa_size<T>()) - 1) | (static_cast<ieee_bitstring_t>(1) << (sizeof(ieee_bitstring_t) * 8 - 1)));
 
 	const auto full_bitstring = dst_exponent_bitstring | dst_mantissa_bitstring;
 
