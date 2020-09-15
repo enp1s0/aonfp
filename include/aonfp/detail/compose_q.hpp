@@ -13,10 +13,10 @@
 
 namespace aonfp {
 namespace detail {
-
+namespace q {
 // composer / decomposer
 template <class T, class S>
-AONFP_HOST_DEVICE inline T decompose_sign_mantissa_q(const S v, int& move_up) {
+AONFP_HOST_DEVICE inline T decompose_sign_mantissa(const S v, int& move_up) {
 	constexpr unsigned ieee_mantissa_size = aonfp::detail::standard_fp::get_mantissa_size<S>();
 	constexpr unsigned aonfp_mantissa_size = sizeof(T) * 8 - 1;
 
@@ -48,7 +48,7 @@ AONFP_HOST_DEVICE inline T decompose_sign_mantissa_q(const S v, int& move_up) {
 }
 
 template <class T, class S>
-AONFP_HOST_DEVICE inline T decompose_exponent_q(const S v, const int move_up, uo_flow_t& uo) {
+AONFP_HOST_DEVICE inline T decompose_exponent(const S v, const int move_up, uo_flow_t& uo) {
 	using ieee_bitstring_t = typename aonfp::detail::bitstring_t<S>::type;
 	const auto exponent = (((*reinterpret_cast<const ieee_bitstring_t*>(&v)) >> aonfp::detail::standard_fp::get_mantissa_size<S>())
 			& ((static_cast<ieee_bitstring_t>(1) << aonfp::detail::standard_fp::get_exponent_size<S>()) - 1)) // mantissa mask
@@ -66,7 +66,7 @@ AONFP_HOST_DEVICE inline T decompose_exponent_q(const S v, const int move_up, uo
 }
 
 template <class T, class S_MANTISSA_T>
-AONFP_HOST_DEVICE inline T compose_sign_mantissa_q(const S_MANTISSA_T mantissa_q, const T src_fp, int& move_up) {
+AONFP_HOST_DEVICE inline T compose_sign_mantissa(const S_MANTISSA_T mantissa_q, const T src_fp, int& move_up) {
 	using ieee_bitstring_t = typename aonfp::detail::bitstring_t<T>::type;
 	const auto mantissa = mantissa_q << 1;
 	const auto sign = mantissa_q >> (sizeof(S_MANTISSA_T) * 8 - 1);
@@ -91,7 +91,7 @@ AONFP_HOST_DEVICE inline T compose_sign_mantissa_q(const S_MANTISSA_T mantissa_q
 }
 
 template <class T, class EXP_T>
-AONFP_HOST_DEVICE inline T compose_exponent_q(const EXP_T exp, const T src_fp, const int move_up) {
+AONFP_HOST_DEVICE inline T compose_exponent(const EXP_T exp, const T src_fp, const int move_up) {
 	const auto e = -static_cast<int>(exp);
 	auto dst_exponent = static_cast<typename bitstring_t<T>::type>(0);
 	if (e > -static_cast<int>(aonfp::detail::standard_fp::get_exponent_size<T>())) {
@@ -106,6 +106,7 @@ AONFP_HOST_DEVICE inline T compose_exponent_q(const EXP_T exp, const T src_fp, c
 
 	return *reinterpret_cast<const T*>(&full_bitstring);
 }
+} // namespace q
 } // namespace detail
 } // namespace aonfp
 
