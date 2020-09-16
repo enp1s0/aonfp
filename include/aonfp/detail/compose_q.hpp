@@ -57,7 +57,7 @@ AONFP_HOST_DEVICE inline T decompose_exponent(const S v, const int move_up, uo_f
 		return 0;
 	}
 	const auto src_exponent = static_cast<typename std::make_signed<T>::type>(exponent) - detail::get_default_exponent_bias(aonfp::detail::standard_fp::get_exponent_size<S>());
-	const auto dst_exponent = -src_exponent;
+	const T dst_exponent = aonfp::detail::get_max<T>() + src_exponent;
 	if (src_exponent > 0) {
 		uo = uo_flow_overflow;
 	}
@@ -91,15 +91,16 @@ AONFP_HOST_DEVICE inline T compose_sign_mantissa(const S_MANTISSA_T mantissa_q, 
 }
 
 template <class T, class EXP_T>
-AONFP_HOST_DEVICE inline T compose_exponent(const EXP_T exp, const T src_fp, const int move_up) {
+AONFP_HOST_DEVICE inline T compose_exponent(const EXP_T ex, const T src_fp, const int move_up) {
 	using ieee_bitstring_t = typename bitstring_t<T>::type;
-	const auto e = -(static_cast<int>(exp) + move_up);
+	const auto e = static_cast<long>(ex) - aonfp::detail::get_max<EXP_T>();// - move_up;
 	auto dst_exponent = static_cast<typename bitstring_t<T>::type>(0);
-	if (e > -static_cast<int>(aonfp::detail::standard_fp::get_exponent_size<T>())) {
+	if (e >= -(1 << static_cast<int>(aonfp::detail::standard_fp::get_exponent_size<T>()))) {
 		const auto bias = aonfp::detail::get_default_exponent_bias(aonfp::detail::standard_fp::get_exponent_size<T>());
 		dst_exponent = e + bias;
 	}
-	const auto dst_exponent_bitstring = dst_exponent << standard_fp::get_mantissa_size<T>();
+
+	const auto dst_exponent_bitstring = static_cast<ieee_bitstring_t>(dst_exponent) << standard_fp::get_mantissa_size<T>();
 
 	const auto dst_mantissa_bitstring = *reinterpret_cast<const typename bitstring_t<T>::type*>(&src_fp) &
 		(((static_cast<ieee_bitstring_t>(1) << standard_fp::get_mantissa_size<T>()) - 1) | (static_cast<ieee_bitstring_t>(1) << (sizeof(ieee_bitstring_t) * 8 - 1)));
