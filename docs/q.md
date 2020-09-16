@@ -5,7 +5,7 @@
 ## Features
 
 - represents only a value which abs is equal or less than 1.
-- divides `exponent` and `sign & mantissa`
+- divides `exponent` and `sign & mantissa` to make it easy to compress `exponent`
 
 ## Supported operations
 - [ ] `mul`
