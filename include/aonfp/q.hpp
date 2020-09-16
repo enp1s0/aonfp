@@ -26,10 +26,20 @@ AONFP_HOST_DEVICE inline void decompose(EXP_T& exp, S_MANTISSA_T& s_mantissa, co
 }
 
 template <class T, class EXP_T, class S_MANTISSA_T>
-AONFP_HOST_DEVICE inline T compose(const EXP_T s_exp, const S_MANTISSA_T mantissa) {
+AONFP_HOST_DEVICE inline T compose(const EXP_T exp, const S_MANTISSA_T mantissa) {
 	int move_up;
 	const auto fp_mantissa = detail::q::compose_sign_mantissa<T, S_MANTISSA_T>(mantissa, 1, move_up);
-	return detail::q::compose_exponent<T, EXP_T>(s_exp, fp_mantissa, move_up);
+	const auto fp = detail::q::compose_exponent<T, EXP_T>(exp, fp_mantissa, move_up);
+
+	using ieee_bitstring_t = typename aonfp::detail::bitstring_t<T>::type;
+	if (((*reinterpret_cast<const ieee_bitstring_t*>(&fp)) << 1) == 0 && exp) {
+		if (mantissa >> (sizeof(S_MANTISSA_T) * 8 - 1)) {
+			return static_cast<T>(-1);
+		} else {
+			return static_cast<T>(1);
+		}
+	}
+	return fp;
 }
 } // namespace q
 } // namespace aonfp
