@@ -86,8 +86,11 @@ AONFP_HOST_DEVICE inline T compose_sign_mantissa(const S_MANTISSA_T mantissa_q, 
 
 template <class T, class EXP_T>
 AONFP_HOST_DEVICE inline T compose_exponent(const EXP_T ex, const T src_fp, const int move_up) {
+	if (ex == 0) {
+		return static_cast<T>(0);
+	}
 	using ieee_bitstring_t = typename bitstring_t<T>::type;
-	const auto e = static_cast<long>(ex) - aonfp::detail::get_max<EXP_T>();// - move_up;
+	const auto e = static_cast<long>(ex) - aonfp::detail::get_max<EXP_T>() - move_up;
 	auto dst_exponent = static_cast<typename bitstring_t<T>::type>(0);
 	if (e >= -(1 << static_cast<int>(aonfp::detail::standard_fp::get_exponent_size<T>()))) {
 		const auto bias = aonfp::detail::get_default_exponent_bias(aonfp::detail::standard_fp::get_exponent_size<T>());
