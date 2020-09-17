@@ -53,12 +53,7 @@ template <class T>
 AONFP_HOST_DEVICE constexpr T get_zero_mantissa_bitstring() {return static_cast<T>(0);};
 
 template <class T>
-AONFP_HOST_DEVICE constexpr T get_max();
-template <> AONFP_HOST_DEVICE constexpr uint64_t get_max<uint64_t>() {return 0xfffffffffffffffflu;}
-template <> AONFP_HOST_DEVICE constexpr uint32_t get_max<uint32_t>() {return 0xffffffffu;}
-template <> AONFP_HOST_DEVICE constexpr uint16_t get_max<uint16_t>() {return 0xffff;}
-template <> AONFP_HOST_DEVICE constexpr uint8_t  get_max<uint8_t >() {return 0xff;}
-
+AONFP_HOST_DEVICE constexpr T get_max() {return ~static_cast<T>(0);};
 
 // range getter
 AONFP_HOST_DEVICE constexpr long get_max_exponent(const unsigned expopent_length) {return static_cast<long>(get_default_exponent_bias(expopent_length));}
