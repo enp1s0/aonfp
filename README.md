@@ -83,3 +83,7 @@ nvcc ... -L/path/to/lib_dir -laonfp_cuda_copy
 ![cuda-copy-detail](./docs/aonfp_cuda_copy_detail.svg)
 
 This functions also set cpu affinity.
+
+## AONFP Q - AONFP for Quantum Computer Simulation
+
+See [AONFP Q](./docs/q.md)

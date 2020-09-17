@@ -52,6 +52,8 @@ AONFP_HOST_DEVICE constexpr T get_zero_sign_exponent_bitstring(T s_exp = 0) {ret
 template <class T>
 AONFP_HOST_DEVICE constexpr T get_zero_mantissa_bitstring() {return static_cast<T>(0);};
 
+template <class T>
+AONFP_HOST_DEVICE constexpr T get_max() {return ~static_cast<T>(0);};
 
 // range getter
 AONFP_HOST_DEVICE constexpr long get_max_exponent(const unsigned expopent_length) {return static_cast<long>(get_default_exponent_bias(expopent_length));}
