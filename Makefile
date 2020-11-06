@@ -1,5 +1,5 @@
 NVCC=nvcc
-NVCCFLAGS=-std=c++11 -I./include
+NVCCFLAGS=-std=c++17 -I./include
 NVCCFLAGS+=-gencode arch=compute_60,code=sm_60
 NVCCFLAGS+=-gencode arch=compute_61,code=sm_61
 NVCCFLAGS+=-gencode arch=compute_70,code=sm_70
