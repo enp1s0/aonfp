@@ -8,6 +8,10 @@ AONFP restricts the type of these bitstrings to `uint8/16/32/64` to reduce compl
 
 ![aonfp-format](docs/aonfp_format.svg)
 
+## Required environment
+
+- C++ 17 or later (`if constexpr` is used in this code)
+
 ## Supported data format
 
 ### Standard floating point
