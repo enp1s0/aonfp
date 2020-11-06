@@ -22,7 +22,7 @@ AONFP_HOST_DEVICE inline T decompose_sign_mantissa(const S v, int& move_up) {
 	move_up = 0;
 
 	T result_mantissa, result_sign;
-	if (ieee_mantissa_size <= aonfp_mantissa_size) {
+	if constexpr (ieee_mantissa_size <= aonfp_mantissa_size) {
 		result_mantissa = (static_cast<T>(ieee_mantissa_bitstring) << (aonfp_mantissa_size - sizeof(ieee_bitstring_t) * 8)) >> 1;
 		result_sign = static_cast<T>(ieee_bitstring >> (sizeof(ieee_bitstring_t) * 8 - 1)) << (sizeof(T) * 8 - 1);
 	} else {
@@ -70,7 +70,7 @@ AONFP_HOST_DEVICE inline T compose_sign_mantissa(const S_MANTISSA_T mantissa_q, 
 	const auto src_exp = (((*reinterpret_cast<const ieee_bitstring_t*>(&src_fp)) << 1) >> (1 + src_mantissa_size) << src_mantissa_size);
 
 	ieee_bitstring_t full_bitstring;
-	if (sizeof(S_MANTISSA_T) * 8 > aonfp::detail::standard_fp::get_mantissa_size<T>()) {
+	if constexpr (sizeof(S_MANTISSA_T) * 8 > aonfp::detail::standard_fp::get_mantissa_size<T>()) {
 		const auto shifted_m = mantissa >> (sizeof(S_MANTISSA_T) * 8 - standard_fp::get_mantissa_size<T>());
 		const auto s = (mantissa >> (sizeof(S_MANTISSA_T) * 8 - 1 - standard_fp::get_mantissa_size<T>()) & 0x1);
 		const auto shifted_m_a = shifted_m + s;
@@ -90,7 +90,7 @@ AONFP_HOST_DEVICE inline T compose_exponent(const EXP_T ex, const T src_fp, cons
 		return static_cast<T>(0);
 	}
 	using ieee_bitstring_t = typename bitstring_t<T>::type;
-	const auto e = static_cast<long>(ex) - aonfp::detail::get_max<EXP_T>() - move_up;
+	const long e = static_cast<long>(ex) - aonfp::detail::get_max<EXP_T>() - move_up;
 	auto dst_exponent = static_cast<typename bitstring_t<T>::type>(0);
 	if (e >= -(1 << static_cast<int>(aonfp::detail::standard_fp::get_exponent_size<T>()))) {
 		const auto bias = aonfp::detail::get_default_exponent_bias(aonfp::detail::standard_fp::get_exponent_size<T>());
