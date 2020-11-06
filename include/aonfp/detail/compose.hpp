@@ -19,8 +19,9 @@ AONFP_HOST_DEVICE inline T decompose_mantissa(const S v, int& move_up) {
 	const auto ieee_mantissa_bitstring = ((*reinterpret_cast<const ieee_bitstring_t*>(&v)) & mantissa_mask) << (1 + aonfp::detail::standard_fp::get_exponent_size<S>());
 	move_up = 0;
 
-	if (ieee_mantissa_size <= aonfp_mantissa_size) {
-		return static_cast<T>(ieee_mantissa_bitstring) << ((sizeof(T) - sizeof(ieee_bitstring_t)) * 8);
+	T mantissa;
+	if constexpr (ieee_mantissa_size <= aonfp_mantissa_size) {
+		mantissa = static_cast<T>(ieee_mantissa_bitstring) << ((sizeof(T) - sizeof(ieee_bitstring_t)) * 8);
 	} else {
 		// rounding
 		constexpr unsigned shift_size = (sizeof(ieee_bitstring_t) - sizeof(T)) * 8;
@@ -31,8 +32,9 @@ AONFP_HOST_DEVICE inline T decompose_mantissa(const S v, int& move_up) {
 		if (ma == 0 && cut_msb != 0) {
 			move_up = 1;
 		}
-		return static_cast<T>(ma);
+		mantissa = static_cast<T>(ma);
 	}
+	return mantissa;
 }
 
 template <class T, class S>
@@ -63,20 +65,22 @@ template <class T, class MANTISSA_T>
 AONFP_HOST_DEVICE inline T compose_mantissa(const MANTISSA_T mantissa, const T src_fp, int& move_up) {
 	using ieee_bitstring_t = typename aonfp::detail::bitstring_t<T>::type;
 
-	if (sizeof(MANTISSA_T) * 8 > aonfp::detail::standard_fp::get_mantissa_size<T>()) {
+	T dst_fp;
+	if constexpr (sizeof(MANTISSA_T) * 8 > aonfp::detail::standard_fp::get_mantissa_size<T>()) {
 		const auto shifted_m = mantissa >> (sizeof(MANTISSA_T) * 8 - standard_fp::get_mantissa_size<T>());
 		const auto s = (mantissa >> (sizeof(MANTISSA_T) * 8 - standard_fp::get_mantissa_size<T>() - 1) & 0x1);
 		const auto shifted_m_a = shifted_m + s;
 		move_up = (shifted_m_a >> standard_fp::get_mantissa_size<T>());
 		const auto full_bitstring = shifted_m_a | (*reinterpret_cast<const MANTISSA_T*>(&src_fp) & (~((static_cast<MANTISSA_T>(1) << standard_fp::get_mantissa_size<T>()) - 1)));
-		return *reinterpret_cast<const T*>(&full_bitstring);
+		dst_fp = *reinterpret_cast<const T*>(&full_bitstring);
 	} else {
 		const auto shifted_m = static_cast<ieee_bitstring_t>(mantissa) << (aonfp::detail::standard_fp::get_mantissa_size<T>() - sizeof(MANTISSA_T) * 8);
 		move_up = 0;
 		const auto full_bitstring = shifted_m |
 			(*reinterpret_cast<const ieee_bitstring_t*>(&src_fp) & ((~static_cast<ieee_bitstring_t>(0)) - ((static_cast<ieee_bitstring_t>(1) << aonfp::detail::standard_fp::get_mantissa_size<T>()) - 1)));
-		return *reinterpret_cast<const T*>(&full_bitstring);
+		dst_fp = *reinterpret_cast<const T*>(&full_bitstring);
 	}
+	return dst_fp;
 }
 
 template <class T, class S_EXP_T>
