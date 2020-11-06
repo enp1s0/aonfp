@@ -60,6 +60,11 @@ And also it has a reverse function.
 
 To use this feature, you need to build a static library and link it to your application.
 
+
+### Supported GPUs
+
+NVIDIA Pascal or later architecture
+
 ### Build
 ```bash
 make
