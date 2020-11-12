@@ -178,7 +178,7 @@ __global__ void copy_to_host_q_kernel(S_EXP_T *const s_exp_ptr, MANTISSA_T *cons
 } // namespace
 
 template <class T, class S_EXP_T, class MANTISSA_T>
-int aonfp::cuda::copy_to_device(T *const dst_ptr, const S_EXP_T *const s_exp_ptr, const MANTISSA_T *const mantissa_ptr, const std::size_t N, const bool set_cpu_affinity_frag, cudaStream_t stream) {
+int aonfp::cuda::copy_to_device(T *const dst_ptr, const S_EXP_T *const s_exp_ptr, const MANTISSA_T *const mantissa_ptr, const std::size_t N, const unsigned block_size, const bool set_cpu_affinity_frag, cudaStream_t stream) {
 	if (set_cpu_affinity_frag) {
 		// Set CPU affinity for good performance
 		cudaPointerAttributes p_attributes;
@@ -186,7 +186,6 @@ int aonfp::cuda::copy_to_device(T *const dst_ptr, const S_EXP_T *const s_exp_ptr
 		set_cpu_affinity(p_attributes.device);
 	}
 
-	constexpr std::size_t block_size = 1024;
 	copy_to_device_kernel<T, S_EXP_T, MANTISSA_T><<<(N + block_size - 1) / block_size, block_size, 0, stream>>>(dst_ptr, s_exp_ptr, mantissa_ptr, N);
 	if (cudaGetLastError() == cudaSuccess) {
 		return 0;
@@ -196,7 +195,7 @@ int aonfp::cuda::copy_to_device(T *const dst_ptr, const S_EXP_T *const s_exp_ptr
 }
 
 template <class S_EXP_T, class MANTISSA_T, class T>
-int aonfp::cuda::copy_to_host(S_EXP_T *const s_exp_ptr, MANTISSA_T *const mantissa_ptr, const T *const src_ptr, const std::size_t N, const bool set_cpu_affinity_frag, cudaStream_t stream) {
+int aonfp::cuda::copy_to_host(S_EXP_T *const s_exp_ptr, MANTISSA_T *const mantissa_ptr, const T *const src_ptr, const std::size_t N, const unsigned block_size, const bool set_cpu_affinity_frag, cudaStream_t stream) {
 	if (set_cpu_affinity_frag) {
 		// Set CPU affinity for good performance
 		cudaPointerAttributes p_attributes;
@@ -204,7 +203,6 @@ int aonfp::cuda::copy_to_host(S_EXP_T *const s_exp_ptr, MANTISSA_T *const mantis
 		set_cpu_affinity(p_attributes.device);
 	}
 
-	constexpr std::size_t block_size = 1024;
 	copy_to_host_kernel<S_EXP_T, MANTISSA_T, T><<<(N + block_size - 1) / block_size, block_size, 0, stream>>>(s_exp_ptr, mantissa_ptr, src_ptr, N);
 	if (cudaGetLastError() == cudaSuccess) {
 		return 0;
@@ -213,77 +211,77 @@ int aonfp::cuda::copy_to_host(S_EXP_T *const s_exp_ptr, MANTISSA_T *const mantis
 	}
 }
 
-template int aonfp::cuda::copy_to_device<double, uint64_t, uint64_t>(double* const, const uint64_t* const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint32_t, uint64_t>(double* const, const uint32_t* const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint16_t, uint64_t>(double* const, const uint16_t* const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint8_t , uint64_t>(double* const, const uint8_t * const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint64_t, uint32_t>(double* const, const uint64_t* const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint32_t, uint32_t>(double* const, const uint32_t* const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint16_t, uint32_t>(double* const, const uint16_t* const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint8_t , uint32_t>(double* const, const uint8_t * const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint64_t, uint16_t>(double* const, const uint64_t* const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint32_t, uint16_t>(double* const, const uint32_t* const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint16_t, uint16_t>(double* const, const uint16_t* const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint8_t , uint16_t>(double* const, const uint8_t * const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint64_t, uint8_t >(double* const, const uint64_t* const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint32_t, uint8_t >(double* const, const uint32_t* const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint16_t, uint8_t >(double* const, const uint16_t* const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<double, uint8_t , uint8_t >(double* const, const uint8_t * const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint64_t, uint64_t>(double* const, const uint64_t* const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint32_t, uint64_t>(double* const, const uint32_t* const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint16_t, uint64_t>(double* const, const uint16_t* const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint8_t , uint64_t>(double* const, const uint8_t * const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint64_t, uint32_t>(double* const, const uint64_t* const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint32_t, uint32_t>(double* const, const uint32_t* const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint16_t, uint32_t>(double* const, const uint16_t* const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint8_t , uint32_t>(double* const, const uint8_t * const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint64_t, uint16_t>(double* const, const uint64_t* const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint32_t, uint16_t>(double* const, const uint32_t* const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint16_t, uint16_t>(double* const, const uint16_t* const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint8_t , uint16_t>(double* const, const uint8_t * const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint64_t, uint8_t >(double* const, const uint64_t* const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint32_t, uint8_t >(double* const, const uint32_t* const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint16_t, uint8_t >(double* const, const uint16_t* const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<double, uint8_t , uint8_t >(double* const, const uint8_t * const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
 
-template int aonfp::cuda::copy_to_device<float , uint64_t, uint64_t>(float * const, const uint64_t* const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint32_t, uint64_t>(float * const, const uint32_t* const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint16_t, uint64_t>(float * const, const uint16_t* const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint8_t , uint64_t>(float * const, const uint8_t * const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint64_t, uint32_t>(float * const, const uint64_t* const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint32_t, uint32_t>(float * const, const uint32_t* const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint16_t, uint32_t>(float * const, const uint16_t* const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint8_t , uint32_t>(float * const, const uint8_t * const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint64_t, uint16_t>(float * const, const uint64_t* const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint32_t, uint16_t>(float * const, const uint32_t* const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint16_t, uint16_t>(float * const, const uint16_t* const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint8_t , uint16_t>(float * const, const uint8_t * const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint64_t, uint8_t >(float * const, const uint64_t* const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint32_t, uint8_t >(float * const, const uint32_t* const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint16_t, uint8_t >(float * const, const uint16_t* const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_device<float , uint8_t , uint8_t >(float * const, const uint8_t * const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint64_t, uint64_t>(float * const, const uint64_t* const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint32_t, uint64_t>(float * const, const uint32_t* const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint16_t, uint64_t>(float * const, const uint16_t* const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint8_t , uint64_t>(float * const, const uint8_t * const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint64_t, uint32_t>(float * const, const uint64_t* const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint32_t, uint32_t>(float * const, const uint32_t* const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint16_t, uint32_t>(float * const, const uint16_t* const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint8_t , uint32_t>(float * const, const uint8_t * const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint64_t, uint16_t>(float * const, const uint64_t* const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint32_t, uint16_t>(float * const, const uint32_t* const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint16_t, uint16_t>(float * const, const uint16_t* const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint8_t , uint16_t>(float * const, const uint8_t * const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint64_t, uint8_t >(float * const, const uint64_t* const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint32_t, uint8_t >(float * const, const uint32_t* const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint16_t, uint8_t >(float * const, const uint16_t* const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_device<float , uint8_t , uint8_t >(float * const, const uint8_t * const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
 
-template int aonfp::cuda::copy_to_host<uint64_t, uint64_t, double>(uint64_t* const, uint64_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint32_t, uint64_t, double>(uint32_t* const, uint64_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint16_t, uint64_t, double>(uint16_t* const, uint64_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint8_t , uint64_t, double>(uint8_t * const, uint64_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint64_t, uint32_t, double>(uint64_t* const, uint32_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint32_t, uint32_t, double>(uint32_t* const, uint32_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint16_t, uint32_t, double>(uint16_t* const, uint32_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint8_t , uint32_t, double>(uint8_t * const, uint32_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint64_t, uint16_t, double>(uint64_t* const, uint16_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint32_t, uint16_t, double>(uint32_t* const, uint16_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint16_t, uint16_t, double>(uint16_t* const, uint16_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint8_t , uint16_t, double>(uint8_t * const, uint16_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint64_t, uint8_t , double>(uint64_t* const, uint8_t * const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint32_t, uint8_t , double>(uint32_t* const, uint8_t * const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint16_t, uint8_t , double>(uint16_t* const, uint8_t * const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint8_t , uint8_t , double>(uint8_t * const, uint8_t * const, const double* const, const std::size_t, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint64_t, uint64_t, double>(uint64_t* const, uint64_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint32_t, uint64_t, double>(uint32_t* const, uint64_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint16_t, uint64_t, double>(uint16_t* const, uint64_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint8_t , uint64_t, double>(uint8_t * const, uint64_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint64_t, uint32_t, double>(uint64_t* const, uint32_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint32_t, uint32_t, double>(uint32_t* const, uint32_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint16_t, uint32_t, double>(uint16_t* const, uint32_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint8_t , uint32_t, double>(uint8_t * const, uint32_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint64_t, uint16_t, double>(uint64_t* const, uint16_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint32_t, uint16_t, double>(uint32_t* const, uint16_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint16_t, uint16_t, double>(uint16_t* const, uint16_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint8_t , uint16_t, double>(uint8_t * const, uint16_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint64_t, uint8_t , double>(uint64_t* const, uint8_t * const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint32_t, uint8_t , double>(uint32_t* const, uint8_t * const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint16_t, uint8_t , double>(uint16_t* const, uint8_t * const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint8_t , uint8_t , double>(uint8_t * const, uint8_t * const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
 
-template int aonfp::cuda::copy_to_host<uint64_t, uint64_t, float >(uint64_t* const, uint64_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint32_t, uint64_t, float >(uint32_t* const, uint64_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint16_t, uint64_t, float >(uint16_t* const, uint64_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint8_t , uint64_t, float >(uint8_t * const, uint64_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint64_t, uint32_t, float >(uint64_t* const, uint32_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint32_t, uint32_t, float >(uint32_t* const, uint32_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint16_t, uint32_t, float >(uint16_t* const, uint32_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint8_t , uint32_t, float >(uint8_t * const, uint32_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint64_t, uint16_t, float >(uint64_t* const, uint16_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint32_t, uint16_t, float >(uint32_t* const, uint16_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint16_t, uint16_t, float >(uint16_t* const, uint16_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint8_t , uint16_t, float >(uint8_t * const, uint16_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint64_t, uint8_t , float >(uint64_t* const, uint8_t * const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint32_t, uint8_t , float >(uint32_t* const, uint8_t * const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint16_t, uint8_t , float >(uint16_t* const, uint8_t * const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::cuda::copy_to_host<uint8_t , uint8_t , float >(uint8_t * const, uint8_t * const, const float * const, const std::size_t, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint64_t, uint64_t, float >(uint64_t* const, uint64_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint32_t, uint64_t, float >(uint32_t* const, uint64_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint16_t, uint64_t, float >(uint16_t* const, uint64_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint8_t , uint64_t, float >(uint8_t * const, uint64_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint64_t, uint32_t, float >(uint64_t* const, uint32_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint32_t, uint32_t, float >(uint32_t* const, uint32_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint16_t, uint32_t, float >(uint16_t* const, uint32_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint8_t , uint32_t, float >(uint8_t * const, uint32_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint64_t, uint16_t, float >(uint64_t* const, uint16_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint32_t, uint16_t, float >(uint32_t* const, uint16_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint16_t, uint16_t, float >(uint16_t* const, uint16_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint8_t , uint16_t, float >(uint8_t * const, uint16_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint64_t, uint8_t , float >(uint64_t* const, uint8_t * const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint32_t, uint8_t , float >(uint32_t* const, uint8_t * const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint16_t, uint8_t , float >(uint16_t* const, uint8_t * const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::cuda::copy_to_host<uint8_t , uint8_t , float >(uint8_t * const, uint8_t * const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
 
 // For q
 template <class T, class EXP_T, class S_MANTISSA_T>
-int aonfp::q::cuda::copy_to_device(T *const dst_ptr, const EXP_T *const exp_ptr, const S_MANTISSA_T *const s_mantissa_ptr, const std::size_t N, const bool set_cpu_affinity_frag, cudaStream_t stream) {
+int aonfp::q::cuda::copy_to_device(T *const dst_ptr, const EXP_T *const exp_ptr, const S_MANTISSA_T *const s_mantissa_ptr, const std::size_t N, const unsigned block_size, const bool set_cpu_affinity_frag, cudaStream_t stream) {
 	if (set_cpu_affinity_frag) {
 		// Set CPU affinity for good performance
 		cudaPointerAttributes p_attributes;
@@ -291,7 +289,6 @@ int aonfp::q::cuda::copy_to_device(T *const dst_ptr, const EXP_T *const exp_ptr,
 		set_cpu_affinity(p_attributes.device);
 	}
 
-	constexpr std::size_t block_size = 1024;
 	copy_to_device_q_kernel<T, EXP_T, S_MANTISSA_T><<<(N + block_size - 1) / block_size, block_size, 0, stream>>>(dst_ptr, exp_ptr, s_mantissa_ptr, N);
 	if (cudaGetLastError() == cudaSuccess) {
 		return 0;
@@ -301,7 +298,7 @@ int aonfp::q::cuda::copy_to_device(T *const dst_ptr, const EXP_T *const exp_ptr,
 }
 
 template <class EXP_T, class S_MANTISSA_T, class T>
-int aonfp::q::cuda::copy_to_host(EXP_T *const exp_ptr, S_MANTISSA_T *const s_mantissa_ptr, const T *const src_ptr, const std::size_t N, const bool set_cpu_affinity_frag, cudaStream_t stream) {
+int aonfp::q::cuda::copy_to_host(EXP_T *const exp_ptr, S_MANTISSA_T *const s_mantissa_ptr, const T *const src_ptr, const std::size_t N, const unsigned block_size, const bool set_cpu_affinity_frag, cudaStream_t stream) {
 	if (set_cpu_affinity_frag) {
 		// Set CPU affinity for good performance
 		cudaPointerAttributes p_attributes;
@@ -309,7 +306,6 @@ int aonfp::q::cuda::copy_to_host(EXP_T *const exp_ptr, S_MANTISSA_T *const s_man
 		set_cpu_affinity(p_attributes.device);
 	}
 
-	constexpr std::size_t block_size = 1024;
 	copy_to_host_q_kernel<EXP_T, S_MANTISSA_T, T><<<(N + block_size - 1) / block_size, block_size, 0, stream>>>(exp_ptr, s_mantissa_ptr, src_ptr, N);
 	if (cudaGetLastError() == cudaSuccess) {
 		return 0;
@@ -318,70 +314,70 @@ int aonfp::q::cuda::copy_to_host(EXP_T *const exp_ptr, S_MANTISSA_T *const s_man
 	}
 }
 
-template int aonfp::q::cuda::copy_to_device<double, uint64_t, uint64_t>(double* const, const uint64_t* const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint32_t, uint64_t>(double* const, const uint32_t* const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint16_t, uint64_t>(double* const, const uint16_t* const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint8_t , uint64_t>(double* const, const uint8_t * const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint64_t, uint32_t>(double* const, const uint64_t* const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint32_t, uint32_t>(double* const, const uint32_t* const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint16_t, uint32_t>(double* const, const uint16_t* const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint8_t , uint32_t>(double* const, const uint8_t * const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint64_t, uint16_t>(double* const, const uint64_t* const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint32_t, uint16_t>(double* const, const uint32_t* const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint16_t, uint16_t>(double* const, const uint16_t* const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint8_t , uint16_t>(double* const, const uint8_t * const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint64_t, uint8_t >(double* const, const uint64_t* const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint32_t, uint8_t >(double* const, const uint32_t* const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint16_t, uint8_t >(double* const, const uint16_t* const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<double, uint8_t , uint8_t >(double* const, const uint8_t * const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint64_t, uint64_t>(double* const, const uint64_t* const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint32_t, uint64_t>(double* const, const uint32_t* const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint16_t, uint64_t>(double* const, const uint16_t* const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint8_t , uint64_t>(double* const, const uint8_t * const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint64_t, uint32_t>(double* const, const uint64_t* const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint32_t, uint32_t>(double* const, const uint32_t* const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint16_t, uint32_t>(double* const, const uint16_t* const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint8_t , uint32_t>(double* const, const uint8_t * const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint64_t, uint16_t>(double* const, const uint64_t* const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint32_t, uint16_t>(double* const, const uint32_t* const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint16_t, uint16_t>(double* const, const uint16_t* const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint8_t , uint16_t>(double* const, const uint8_t * const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint64_t, uint8_t >(double* const, const uint64_t* const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint32_t, uint8_t >(double* const, const uint32_t* const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint16_t, uint8_t >(double* const, const uint16_t* const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<double, uint8_t , uint8_t >(double* const, const uint8_t * const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
 
-template int aonfp::q::cuda::copy_to_device<float , uint64_t, uint64_t>(float * const, const uint64_t* const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint32_t, uint64_t>(float * const, const uint32_t* const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint16_t, uint64_t>(float * const, const uint16_t* const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint8_t , uint64_t>(float * const, const uint8_t * const, const uint64_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint64_t, uint32_t>(float * const, const uint64_t* const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint32_t, uint32_t>(float * const, const uint32_t* const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint16_t, uint32_t>(float * const, const uint16_t* const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint8_t , uint32_t>(float * const, const uint8_t * const, const uint32_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint64_t, uint16_t>(float * const, const uint64_t* const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint32_t, uint16_t>(float * const, const uint32_t* const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint16_t, uint16_t>(float * const, const uint16_t* const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint8_t , uint16_t>(float * const, const uint8_t * const, const uint16_t* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint64_t, uint8_t >(float * const, const uint64_t* const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint32_t, uint8_t >(float * const, const uint32_t* const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint16_t, uint8_t >(float * const, const uint16_t* const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_device<float , uint8_t , uint8_t >(float * const, const uint8_t * const, const uint8_t * const, const std::size_t, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint64_t, uint64_t>(float * const, const uint64_t* const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint32_t, uint64_t>(float * const, const uint32_t* const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint16_t, uint64_t>(float * const, const uint16_t* const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint8_t , uint64_t>(float * const, const uint8_t * const, const uint64_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint64_t, uint32_t>(float * const, const uint64_t* const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint32_t, uint32_t>(float * const, const uint32_t* const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint16_t, uint32_t>(float * const, const uint16_t* const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint8_t , uint32_t>(float * const, const uint8_t * const, const uint32_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint64_t, uint16_t>(float * const, const uint64_t* const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint32_t, uint16_t>(float * const, const uint32_t* const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint16_t, uint16_t>(float * const, const uint16_t* const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint8_t , uint16_t>(float * const, const uint8_t * const, const uint16_t* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint64_t, uint8_t >(float * const, const uint64_t* const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint32_t, uint8_t >(float * const, const uint32_t* const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint16_t, uint8_t >(float * const, const uint16_t* const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_device<float , uint8_t , uint8_t >(float * const, const uint8_t * const, const uint8_t * const, const std::size_t, const unsigned, const bool, cudaStream_t);
 
-template int aonfp::q::cuda::copy_to_host<uint64_t, uint64_t, double>(uint64_t* const, uint64_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint32_t, uint64_t, double>(uint32_t* const, uint64_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint16_t, uint64_t, double>(uint16_t* const, uint64_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint8_t , uint64_t, double>(uint8_t * const, uint64_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint64_t, uint32_t, double>(uint64_t* const, uint32_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint32_t, uint32_t, double>(uint32_t* const, uint32_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint16_t, uint32_t, double>(uint16_t* const, uint32_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint8_t , uint32_t, double>(uint8_t * const, uint32_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint64_t, uint16_t, double>(uint64_t* const, uint16_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint32_t, uint16_t, double>(uint32_t* const, uint16_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint16_t, uint16_t, double>(uint16_t* const, uint16_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint8_t , uint16_t, double>(uint8_t * const, uint16_t* const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint64_t, uint8_t , double>(uint64_t* const, uint8_t * const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint32_t, uint8_t , double>(uint32_t* const, uint8_t * const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint16_t, uint8_t , double>(uint16_t* const, uint8_t * const, const double* const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint8_t , uint8_t , double>(uint8_t * const, uint8_t * const, const double* const, const std::size_t, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint64_t, uint64_t, double>(uint64_t* const, uint64_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint32_t, uint64_t, double>(uint32_t* const, uint64_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint16_t, uint64_t, double>(uint16_t* const, uint64_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint8_t , uint64_t, double>(uint8_t * const, uint64_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint64_t, uint32_t, double>(uint64_t* const, uint32_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint32_t, uint32_t, double>(uint32_t* const, uint32_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint16_t, uint32_t, double>(uint16_t* const, uint32_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint8_t , uint32_t, double>(uint8_t * const, uint32_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint64_t, uint16_t, double>(uint64_t* const, uint16_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint32_t, uint16_t, double>(uint32_t* const, uint16_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint16_t, uint16_t, double>(uint16_t* const, uint16_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint8_t , uint16_t, double>(uint8_t * const, uint16_t* const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint64_t, uint8_t , double>(uint64_t* const, uint8_t * const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint32_t, uint8_t , double>(uint32_t* const, uint8_t * const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint16_t, uint8_t , double>(uint16_t* const, uint8_t * const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint8_t , uint8_t , double>(uint8_t * const, uint8_t * const, const double* const, const std::size_t, const unsigned, const bool, cudaStream_t);
 
-template int aonfp::q::cuda::copy_to_host<uint64_t, uint64_t, float >(uint64_t* const, uint64_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint32_t, uint64_t, float >(uint32_t* const, uint64_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint16_t, uint64_t, float >(uint16_t* const, uint64_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint8_t , uint64_t, float >(uint8_t * const, uint64_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint64_t, uint32_t, float >(uint64_t* const, uint32_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint32_t, uint32_t, float >(uint32_t* const, uint32_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint16_t, uint32_t, float >(uint16_t* const, uint32_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint8_t , uint32_t, float >(uint8_t * const, uint32_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint64_t, uint16_t, float >(uint64_t* const, uint16_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint32_t, uint16_t, float >(uint32_t* const, uint16_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint16_t, uint16_t, float >(uint16_t* const, uint16_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint8_t , uint16_t, float >(uint8_t * const, uint16_t* const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint64_t, uint8_t , float >(uint64_t* const, uint8_t * const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint32_t, uint8_t , float >(uint32_t* const, uint8_t * const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint16_t, uint8_t , float >(uint16_t* const, uint8_t * const, const float * const, const std::size_t, const bool, cudaStream_t);
-template int aonfp::q::cuda::copy_to_host<uint8_t , uint8_t , float >(uint8_t * const, uint8_t * const, const float * const, const std::size_t, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint64_t, uint64_t, float >(uint64_t* const, uint64_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint32_t, uint64_t, float >(uint32_t* const, uint64_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint16_t, uint64_t, float >(uint16_t* const, uint64_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint8_t , uint64_t, float >(uint8_t * const, uint64_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint64_t, uint32_t, float >(uint64_t* const, uint32_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint32_t, uint32_t, float >(uint32_t* const, uint32_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint16_t, uint32_t, float >(uint16_t* const, uint32_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint8_t , uint32_t, float >(uint8_t * const, uint32_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint64_t, uint16_t, float >(uint64_t* const, uint16_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint32_t, uint16_t, float >(uint32_t* const, uint16_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint16_t, uint16_t, float >(uint16_t* const, uint16_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint8_t , uint16_t, float >(uint8_t * const, uint16_t* const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint64_t, uint8_t , float >(uint64_t* const, uint8_t * const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint32_t, uint8_t , float >(uint32_t* const, uint8_t * const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint16_t, uint8_t , float >(uint16_t* const, uint8_t * const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
+template int aonfp::q::cuda::copy_to_host<uint8_t , uint8_t , float >(uint8_t * const, uint8_t * const, const float * const, const std::size_t, const unsigned, const bool, cudaStream_t);
