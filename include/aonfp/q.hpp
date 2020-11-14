@@ -5,6 +5,13 @@
 
 namespace aonfp {
 namespace q {
+// This class defined a pair of two types for exp and s_mantissa.
+template <class EXPONENT_T, class S_MANTISSA_T>
+struct aonfp_t {
+    using exponent_t = EXPONENT_T;
+    using s_mantissa_t = S_MANTISSA_T;
+};
+
 template <class T, class EXP_T, class S_MANTISSA_T>
 AONFP_HOST_DEVICE inline void decompose(EXP_T& exp, S_MANTISSA_T& s_mantissa, const T v) {
 	int move_up;

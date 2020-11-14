@@ -9,6 +9,13 @@
 #include "detail/macro.hpp"
 
 namespace aonfp {
+// This class defined a pair of two types for s_exp and mantissa.
+template <class S_EXPONENT_T, class MANTISSA_T>
+struct aonfp_t {
+    using s_exponent_t = S_EXPONENT_T;
+    using mantissa_t = MANTISSA_T;
+};
+
 template <class T, class S_EXP_T, class MANTISSA_T>
 AONFP_HOST_DEVICE inline void decompose(S_EXP_T& s_exp, MANTISSA_T& mantissa, const T v) {
 	int move_up;
