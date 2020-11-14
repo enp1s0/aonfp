@@ -5,6 +5,7 @@
 
 namespace aonfp {
 namespace q {
+// This class defined a pair of two types for exp and s_mantissa.
 template <class EXPONENT_T, class S_MANTISSA_T>
 struct aonfp_t {
     using exponent_t = EXPONENT_T;

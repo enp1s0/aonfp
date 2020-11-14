@@ -9,6 +9,7 @@
 #include "detail/macro.hpp"
 
 namespace aonfp {
+// This class defined a pair of two types for s_exp and mantissa.
 template <class S_EXPONENT_T, class MANTISSA_T>
 struct aonfp_t {
     using s_exponent_t = S_EXPONENT_T;
