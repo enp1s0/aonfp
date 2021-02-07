@@ -78,8 +78,8 @@ make
 ```cpp
 #include <aonfp/cuda_copy.hpp>
 
-aonfp::cuda::copy_to_device(device_array, src_s_exp_array, src_mantissa_array, N [, block_size = 256, set_cpu_affinity = true, stream = 0]);
-aonfp::cuda::copy_to_host(dst_s_exp_array, dst_mantissa_array, device_array, N [, block_size = 256, set_cpu_affinity = true, stream = 0]);
+aonfp::cuda::copy_to_device(device_array, inc_dst, src_s_exp_array, inc_s_exp, src_mantissa_array, inc_mantissa, N [, block_size = 256, set_cpu_affinity = true, stream = 0]);
+aonfp::cuda::copy_to_host(dst_s_exp_array, inc_s_exp, dst_mantissa_array, inc_mantissa, device_array, inc_src, N [, block_size = 256, set_cpu_affinity = true, stream = 0]);
 ```
 
 ### Link
