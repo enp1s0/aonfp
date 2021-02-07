@@ -43,7 +43,7 @@ int main() {
 	{
 		cudaDeviceSynchronize();
 		const auto start_clock = std::chrono::system_clock::now();
-		aonfp::cuda::copy_to_device(device_array, src_s_exp_array, src_mantissa_array, N);
+		aonfp::cuda::copy_to_device(device_array, 1, src_s_exp_array, 1, src_mantissa_array, 1, N, 512);
 		cudaDeviceSynchronize();
 		const auto end_clock = std::chrono::system_clock::now();
 
@@ -58,7 +58,7 @@ int main() {
 	{
 		cudaDeviceSynchronize();
 		const auto start_clock = std::chrono::system_clock::now();
-		aonfp::cuda::copy_to_host(dst_s_exp_array, dst_mantissa_array, device_array, N);
+		aonfp::cuda::copy_to_host(dst_s_exp_array, 1, dst_mantissa_array, 1, device_array, 1, N);
 		cudaDeviceSynchronize();
 		const auto end_clock = std::chrono::system_clock::now();
 
