@@ -66,26 +66,6 @@ cpu_set_t str_to_cpuset(const std::string str) {
 	return mask;
 }
 
-std::string cpuset_to_str(const cpu_set_t cpuset) {
-	unsigned c = 0;
-	auto m8 = reinterpret_cast<const uint8_t*>(&cpuset);
-
-	std::string str;
-
-	for (int o = sizeof(cpu_set_t) - 1; o >= 0; o--) {
-		if (c == 0 && m8[o] == 0)
-			continue;
-		char cc[3] = {0};
-		str += cc;
-		c += 2;
-		if (o && o % 4 == 0) {
-			str += ",";
-			c++;
-		}
-	}
-	return str;
-}
-
 cpu_set_t get_cpu_gpu_affinity(const int device_id) {
 	cpu_set_t mask;
 	memset(&mask, 0, sizeof(cpu_set_t));
@@ -117,7 +97,6 @@ void set_cpu_affinity(const int device_id) {
 	CPU_AND(&final_mask, &mask, &gpu_mask);
 
 	if (CPU_COUNT(&final_mask)) {
-		const auto affinity_str = cpuset_to_str(final_mask);
 		sched_setaffinity(0, sizeof(cpu_set_t), &final_mask);
 	}
 }
