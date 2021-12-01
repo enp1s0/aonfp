@@ -67,7 +67,7 @@ To use this feature, you need to build a static library and link it to your appl
 
 ### Supported GPUs
 
-NVIDIA Pascal or later architecture
+NVIDIA Pascal and later architecture
 
 ### Build
 ```bash
