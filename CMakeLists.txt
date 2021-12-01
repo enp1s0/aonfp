@@ -33,12 +33,13 @@ target_link_libraries(cuda_copy PRIVATE
 	)
 
 set_target_properties(cuda_copy PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-#set_target_properties(cuda_copy PROPERTIES PUBLIC_HEADER ${HEADERS} ${DETAIL_HEADERS})
 
 ##########################################################################
 # Installing
 ##########################################################################
 install(TARGETS cuda_copy
 	LIBRARY DESTINATION lib
-	FILES ${HEADERS} DESTINATION include
+	)
+install(
+	DIRECTORY ${INCDIR} DESTINATION include
 	)
