@@ -67,11 +67,15 @@ To use this feature, you need to build a static library and link it to your appl
 
 ### Supported GPUs
 
-NVIDIA Pascal or later architecture
+NVIDIA Pascal and later architecture
 
 ### Build
 ```bash
-make
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=/path/to/install ..
+make -j4
+make install
 ```
 
 ### Sample code
@@ -84,7 +88,7 @@ aonfp::cuda::copy_to_host(dst_s_exp_array, inc_s_exp, dst_mantissa_array, inc_ma
 
 ### Link
 ```bash
-nvcc ... -L/path/to/lib_dir -laonfp_cuda_copy
+nvcc ... -L/path/to/install/lib -I/path/to/install/include -laonfp_cuda_copy
 ```
 
 #### More detail
