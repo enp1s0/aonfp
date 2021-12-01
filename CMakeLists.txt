@@ -21,7 +21,7 @@ set(SRCDIR src)
 file(GLOB HEADERS "${INCDIR}/aonfp/*.hpp")
 file(GLOB DETAIL_HEADERS "${INCDIR}/aonfp/detail/*.hpp")
 
-add_library(aonfp_cuda_copy SHARED
+add_library(aonfp_cuda_copy STATIC
 	${SRCDIR}/cuda_copy.cu
 	${HEADERS}
 	${DETAIL_HEADERS}
