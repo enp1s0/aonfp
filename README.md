@@ -62,7 +62,7 @@ And also it has a reverse function.
 
 ![cuda-copy](docs/aonfp_cuda_copy.svg)
 
-To use this feature, you need to build a static library and link it to your application.
+To use this feature, it is needed to build a static library and link it to your application.
 
 
 ### Supported GPUs
@@ -100,3 +100,9 @@ This functions also set cpu affinity.
 ## AONFP Q - AONFP for Quantum Computer Simulation
 
 See [AONFP Q](./docs/q.md)
+
+## Debug message
+By setting an environment variable, this library outputs debug message.
+```bash
+export AONFP_DEBUG=1
+```
