@@ -15,12 +15,22 @@
 
 namespace {
 
+void cuda_check_error(
+		const cudaError_t stat,
+		const std::string func
+		) {
+	if (stat != cudaSuccess) {
+		throw std::runtime_error(std::string("[AONFP ERROR]: ") + cudaGetErrorString(stat) + " @" + func);
+	}
+}
+#define CUDA_CHECK_ERROR(stat) cuda_check_error((stat), __func__)
+
 std::string get_cuda_path(const int device_id) {
 	constexpr std::size_t busid_size = sizeof("0000:00:00.0");
 	constexpr std::size_t busid_reduced_size = sizeof("0000:00");
 
 	char busid[busid_size];
-	cudaDeviceGetPCIBusId(busid, busid_size, device_id);
+	CUDA_CHECK_ERROR(cudaDeviceGetPCIBusId(busid, busid_size, device_id));
 	aonfp::debug::print("device id = " + std::to_string(device_id) + ", bus id = " + busid + " (@" + __func__ + ")");
 
 	std::string busid_str = [](std::string str) -> std::string {
@@ -33,7 +43,7 @@ std::string get_cuda_path(const int device_id) {
 
 	const auto real_path = realpath(path.c_str(), nullptr);
 	if (real_path == nullptr) {
-		throw std::runtime_error("Could not find the real path of " + path);
+		throw std::runtime_error("[AONFP ERROR]: Could not find the real path of " + path);
 	}
 
 	return std::string{real_path};
@@ -79,7 +89,7 @@ cpu_set_t get_cpu_gpu_affinity(const int device_id) {
 
 	int fd = open(path.c_str(), O_RDONLY);
 	if (fd < 0) {
-		throw std::runtime_error("Could not open " + path);
+		throw std::runtime_error("[AONFP ERROR]: Could not open " + path);
 	}
 
 	char affinity_str[sizeof(cpu_set_t) * 2];
@@ -173,7 +183,7 @@ int aonfp::cuda::copy_to_device(
 		aonfp::debug::print(std::string("set CPU affinity (@") + __func__ + ")");
 		// Set CPU affinity for good performance
 		cudaPointerAttributes p_attributes;
-		cudaPointerGetAttributes(&p_attributes, dst_ptr);
+		CUDA_CHECK_ERROR(cudaPointerGetAttributes(&p_attributes, dst_ptr));
 		set_cpu_affinity(p_attributes.device);
 	}
 
@@ -186,6 +196,7 @@ int aonfp::cuda::copy_to_device(
 	if (cudaGetLastError() == cudaSuccess) {
 		return 0;
 	} else {
+		CUDA_CHECK_ERROR(cudaGetLastError());
 		return 1;
 	}
 }
@@ -203,7 +214,7 @@ int aonfp::cuda::copy_to_host(
 		aonfp::debug::print(std::string("set CPU affinity (@") + __func__ + ")");
 		// Set CPU affinity for good performance
 		cudaPointerAttributes p_attributes;
-		cudaPointerGetAttributes(&p_attributes, src_ptr);
+		CUDA_CHECK_ERROR(cudaPointerGetAttributes(&p_attributes, src_ptr));
 		set_cpu_affinity(p_attributes.device);
 	}
 
@@ -211,6 +222,7 @@ int aonfp::cuda::copy_to_host(
 	if (cudaGetLastError() == cudaSuccess) {
 		return 0;
 	} else {
+		CUDA_CHECK_ERROR(cudaGetLastError());
 		return 1;
 	}
 }
@@ -297,7 +309,7 @@ int aonfp::q::cuda::copy_to_device(
 		aonfp::debug::print(std::string("set CPU affinity (@") + __func__ + ")");
 		// Set CPU affinity for good performance
 		cudaPointerAttributes p_attributes;
-		cudaPointerGetAttributes(&p_attributes, dst_ptr);
+		CUDA_CHECK_ERROR(cudaPointerGetAttributes(&p_attributes, dst_ptr));
 		set_cpu_affinity(p_attributes.device);
 	}
 
@@ -305,6 +317,7 @@ int aonfp::q::cuda::copy_to_device(
 	if (cudaGetLastError() == cudaSuccess) {
 		return 0;
 	} else {
+		CUDA_CHECK_ERROR(cudaGetLastError());
 		return 1;
 	}
 }
@@ -322,7 +335,7 @@ int aonfp::q::cuda::copy_to_host(
 		aonfp::debug::print(std::string("set CPU affinity (@") + __func__ + ")");
 		// Set CPU affinity for good performance
 		cudaPointerAttributes p_attributes;
-		cudaPointerGetAttributes(&p_attributes, src_ptr);
+		CUDA_CHECK_ERROR(cudaPointerGetAttributes(&p_attributes, src_ptr));
 		set_cpu_affinity(p_attributes.device);
 	}
 
@@ -330,6 +343,7 @@ int aonfp::q::cuda::copy_to_host(
 	if (cudaGetLastError() == cudaSuccess) {
 		return 0;
 	} else {
+		CUDA_CHECK_ERROR(cudaGetLastError());
 		return 1;
 	}
 }
