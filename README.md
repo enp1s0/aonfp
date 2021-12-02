@@ -104,5 +104,11 @@ See [AONFP Q](./docs/q.md)
 ## Debug message
 By setting an environment variable, this library outputs debug message.
 ```bash
+# DEBUG MODE ON
 export AONFP_DEBUG=1
+
+# DEBUG MODE OFF
+export AONFP_DEBUG=0
+# or
+unset AONFP_DEBUG
 ```
