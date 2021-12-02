@@ -11,6 +11,7 @@
 #include <aonfp/aonfp.hpp>
 #include <aonfp/q.hpp>
 #include <aonfp/cuda_copy.hpp>
+#include <aonfp/detail/debug_print.hpp>
 
 namespace {
 
@@ -30,16 +31,19 @@ std::string get_cuda_path(const int device_id) {
 
 	char busid[busid_size];
 	CUDA_CHECK_ERROR(cudaDeviceGetPCIBusId(busid, busid_size, device_id));
+	aonfp::debug::print("device id = " + std::to_string(device_id) + ", bus id = " + busid + " (@" + __func__ + ")");
+
 	std::string busid_str = [](std::string str) -> std::string {
 		std::transform(str.begin(), str.end(), str.begin(),
 				[](const unsigned c) {return std::tolower(c);});
 		return str;
 	}(busid);
 	const std::string path = "/sys/class/pci_bus/" + busid_str.substr(0, busid_reduced_size - 1) + "/../../" + busid_str;
+	aonfp::debug::print("bus path = " + path + " (@" + __func__ + ")");
 
 	const auto real_path = realpath(path.c_str(), nullptr);
 	if (real_path == nullptr) {
-		throw std::runtime_error("[AONFP ERROR]: Could not find real path of " + path);
+		throw std::runtime_error("[AONFP ERROR]: Could not find the real path of " + path);
 	}
 
 	return std::string{real_path};
@@ -176,6 +180,7 @@ int aonfp::cuda::copy_to_device(
 		const bool set_cpu_affinity_frag,
 		cudaStream_t stream) {
 	if (set_cpu_affinity_frag) {
+		aonfp::debug::print(std::string("set CPU affinity (@") + __func__ + ")");
 		// Set CPU affinity for good performance
 		cudaPointerAttributes p_attributes;
 		CUDA_CHECK_ERROR(cudaPointerGetAttributes(&p_attributes, dst_ptr));
@@ -206,6 +211,7 @@ int aonfp::cuda::copy_to_host(
 		const bool set_cpu_affinity_frag,
 		cudaStream_t stream) {
 	if (set_cpu_affinity_frag) {
+		aonfp::debug::print(std::string("set CPU affinity (@") + __func__ + ")");
 		// Set CPU affinity for good performance
 		cudaPointerAttributes p_attributes;
 		CUDA_CHECK_ERROR(cudaPointerGetAttributes(&p_attributes, src_ptr));
@@ -300,6 +306,7 @@ int aonfp::q::cuda::copy_to_device(
 		const bool set_cpu_affinity_frag,
 		cudaStream_t stream) {
 	if (set_cpu_affinity_frag) {
+		aonfp::debug::print(std::string("set CPU affinity (@") + __func__ + ")");
 		// Set CPU affinity for good performance
 		cudaPointerAttributes p_attributes;
 		CUDA_CHECK_ERROR(cudaPointerGetAttributes(&p_attributes, dst_ptr));
@@ -325,6 +332,7 @@ int aonfp::q::cuda::copy_to_host(
 		const bool set_cpu_affinity_frag,
 		cudaStream_t stream) {
 	if (set_cpu_affinity_frag) {
+		aonfp::debug::print(std::string("set CPU affinity (@") + __func__ + ")");
 		// Set CPU affinity for good performance
 		cudaPointerAttributes p_attributes;
 		CUDA_CHECK_ERROR(cudaPointerGetAttributes(&p_attributes, src_ptr));
